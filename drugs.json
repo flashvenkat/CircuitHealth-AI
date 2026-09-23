@@ -1,0 +1,17 @@
+{
+  "paracetamol": {
+    "purpose": "Fever and mild-to-moderate pain relief.",
+    "dosage_warning": "Do not exceed 4000mg per day to prevent liver damage.",
+    "food_instructions": "Take after food with water."
+  },
+  "amoxicillin": {
+    "purpose": "Antibiotic for bacterial infections.",
+    "dosage_warning": "Complete the full course as prescribed.",
+    "food_instructions": "Take at evenly spaced intervals with water."
+  },
+  "cetirizine": {
+    "purpose": "Antihistamine for allergies and runny nose.",
+    "dosage_warning": "May cause drowsiness; avoid driving.",
+    "food_instructions": "Take once daily, with or without food."
+  }
+}
