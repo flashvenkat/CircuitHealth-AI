@@ -1,17 +1,684 @@
 {
   "paracetamol": {
-    "purpose": "Fever and mild-to-moderate pain relief.",
-    "dosage_warning": "Do not exceed 4000mg per day to prevent liver damage.",
-    "food_instructions": "Take after food with water."
+    "generic_name": "Paracetamol (Acetaminophen)",
+    "brand_names": [
+      "Crocin",
+      "Dolo 650",
+      "Calpol",
+      "Tylenol",
+      "Panadol"
+    ],
+    "category": "Analgesic & Antipyretic",
+    "purpose": "Relief of mild to moderate pain (headache, toothache, muscle ache) and fever reduction.",
+    "dosage_warning": "Standard adult dose is 500mg-650mg every 4-6 hours. NEVER exceed 4000mg (4g) within 24 hours. Overdose causes severe, potentially fatal hepatotoxicity (liver failure). Avoid combining with other paracetamol-containing combination cold medications.",
+    "food_instructions": "Can be taken with or without food. Taking after food with a full glass of water reduces potential stomach discomfort.",
+    "common_side_effects": [
+      "Nausea",
+      "Stomach pain",
+      "Allergic skin rash (rare)"
+    ],
+    "contraindications": [
+      "Severe liver impairment",
+      "Chronic heavy alcohol consumption"
+    ],
+    "interactions": [
+      "Warfarin (increased bleeding risk with prolonged use)",
+      "Isoniazid",
+      "Alcohol"
+    ],
+    "shorthand_codes": [
+      "PCM",
+      "APAP",
+      "Dolo",
+      "Crocin"
+    ]
   },
   "amoxicillin": {
-    "purpose": "Antibiotic for bacterial infections.",
-    "dosage_warning": "Complete the full course as prescribed.",
-    "food_instructions": "Take at evenly spaced intervals with water."
+    "generic_name": "Amoxicillin",
+    "brand_names": [
+      "Amoxil",
+      "Mox",
+      "Novamox",
+      "Trimox"
+    ],
+    "category": "Aminopenicillin Antibiotic",
+    "purpose": "Treatment of bacterial infections including chest infections (bronchitis, pneumonia), ear infections (otitis media), throat/sinus infections, and urinary tract infections.",
+    "dosage_warning": "Commonly 250mg to 500mg every 8 hours, or 875mg every 12 hours. CRITICAL: Complete the full prescribed course even if symptoms resolve to avoid developing antibiotic resistance. Ineffective against viral infections (flu/common cold).",
+    "food_instructions": "Take at evenly spaced intervals throughout the day. May be taken with or immediately after meals to minimize gastrointestinal upset.",
+    "common_side_effects": [
+      "Diarrhea",
+      "Mild nausea",
+      "Skin rash",
+      "Abdominal cramping"
+    ],
+    "contraindications": [
+      "Known penicillin or cephalosporin allergy",
+      "Infectious mononucleosis"
+    ],
+    "interactions": [
+      "Methotrexate",
+      "Oral typhoid vaccine",
+      "Allopurinol"
+    ],
+    "shorthand_codes": [
+      "Amox",
+      "Amoxi",
+      "Cap Amox"
+    ]
+  },
+  "augmentin": {
+    "generic_name": "Amoxicillin + Clavulanic Acid (Co-amoxiclav)",
+    "brand_names": [
+      "Augmentin",
+      "Clavam 625",
+      "Moxikind-CV",
+      "Curam"
+    ],
+    "category": "Beta-lactamase Inhibitor Combination Antibiotic",
+    "purpose": "Broad-spectrum antibacterial treatment for resistant bacterial infections of respiratory tract, ENT, skin, and urinary tract.",
+    "dosage_warning": "Typically 625mg (500mg/125mg) or 1000mg twice daily. Always complete entire course. High risk of antibiotic-associated diarrhea.",
+    "food_instructions": "MANDATORY: Take at the start of a meal to enhance absorption of clavulanate and significantly reduce gastrointestinal discomfort.",
+    "common_side_effects": [
+      "Diarrhea",
+      "Candidiasis (thrush)",
+      "Nausea",
+      "Vomiting"
+    ],
+    "contraindications": [
+      "History of penicillin-associated jaundice or hepatic dysfunction",
+      "Penicillin allergy"
+    ],
+    "interactions": [
+      "Oral anticoagulants",
+      "Probenecid",
+      "Mycophenolate"
+    ],
+    "shorthand_codes": [
+      "Aug",
+      "Clavam",
+      "Co-amoxiclav"
+    ]
+  },
+  "azithromycin": {
+    "generic_name": "Azithromycin",
+    "brand_names": [
+      "Zithromax",
+      "Azee",
+      "Azithral",
+      "Zady"
+    ],
+    "category": "Macrolide Antibiotic",
+    "purpose": "Bacterial respiratory infections, community-acquired pneumonia, strep pharyngitis, sinusitis, chlamydia, and skin infections.",
+    "dosage_warning": "Commonly 500mg once daily for 3 to 5 days (Z-pack). Do not take aluminum/magnesium-containing antacids at the same time. Monitor for cardiac QT prolongation in high-risk patients.",
+    "food_instructions": "Tablets may be taken with or without food. If taking oral suspension, take 1 hour before or 2 hours after meals.",
+    "common_side_effects": [
+      "Nausea",
+      "Abdominal cramps",
+      "Diarrhea",
+      "Headache"
+    ],
+    "contraindications": [
+      "History of cholestatic jaundice with macrolides",
+      "QT prolongation history"
+    ],
+    "interactions": [
+      "Digoxin",
+      "Warfarin",
+      "Statins (atorvastatin)",
+      "Antacids"
+    ],
+    "shorthand_codes": [
+      "Azith",
+      "Azee",
+      "Z-Pack"
+    ]
   },
   "cetirizine": {
-    "purpose": "Antihistamine for allergies and runny nose.",
-    "dosage_warning": "May cause drowsiness; avoid driving.",
-    "food_instructions": "Take once daily, with or without food."
+    "generic_name": "Cetirizine Hydrochloride",
+    "brand_names": [
+      "Zyrtec",
+      "Cetzine",
+      "Alerid",
+      "Okacet"
+    ],
+    "category": "Second-Generation Antihistamine",
+    "purpose": "Relief of allergic rhinitis (sneezing, runny nose, itching), chronic urticaria (hives), and ocular allergy symptoms.",
+    "dosage_warning": "Standard adult dose is 5mg to 10mg once daily. May cause drowsiness or psychomotor impairment in some individuals; avoid operating heavy machinery or driving until reaction is known. Avoid alcohol.",
+    "food_instructions": "Take once daily, preferably in the evening / before bedtime. Can be taken with or without food with water.",
+    "common_side_effects": [
+      "Mild sedation/drowsiness",
+      "Dry mouth",
+      "Fatigue",
+      "Dizziness"
+    ],
+    "contraindications": [
+      "Severe end-stage renal impairment (CrCl < 10 mL/min)"
+    ],
+    "interactions": [
+      "CNS depressants",
+      "Sedatives",
+      "Alcohol"
+    ],
+    "shorthand_codes": [
+      "Cet",
+      "Cetzine",
+      "Tab Cetirizine"
+    ]
+  },
+  "montelukast": {
+    "generic_name": "Montelukast",
+    "brand_names": [
+      "Singulair",
+      "Montair",
+      "Telekast",
+      "Monticope (with Levocetirizine)"
+    ],
+    "category": "Leukotriene Receptor Antagonist",
+    "purpose": "Maintenance therapy and prevention of chronic asthma, exercise-induced bronchospasm, and seasonal allergic rhinitis.",
+    "dosage_warning": "Standard dose is 10mg once daily. NOT a rescue inhaler; do not use for acute asthma attacks. Black-box warning: monitor for neuropsychiatric events (mood changes, vivid dreams, depression).",
+    "food_instructions": "Take in the evening with or without food. For exercise-induced asthma, take at least 2 hours prior to physical exercise.",
+    "common_side_effects": [
+      "Headache",
+      "Upper respiratory tract infection",
+      "Abdominal pain",
+      "Insomnia"
+    ],
+    "contraindications": [
+      "Known hypersensitivity"
+    ],
+    "interactions": [
+      "Phenobarbital",
+      "Rifampin",
+      "Gemfibrozil"
+    ],
+    "shorthand_codes": [
+      "Mont",
+      "Montair",
+      "Singulair"
+    ]
+  },
+  "pantoprazole": {
+    "generic_name": "Pantoprazole Sodium",
+    "brand_names": [
+      "Protonix",
+      "Pan 40",
+      "Pantocid",
+      "Pantosec"
+    ],
+    "category": "Proton Pump Inhibitor (PPI)",
+    "purpose": "Treatment of gastroesophageal reflux disease (GERD), erosive esophagitis, gastric/duodenal ulcers, and acid hypersecretion.",
+    "dosage_warning": "Standard adult dose is 40mg once daily. Long-term continuous use (>1 year) may increase risk of bone fractures, hypomagnesemia, and vitamin B12 deficiency. Do not crush or chew delayed-release tablets.",
+    "food_instructions": "CRITICAL TIMING: Take 30 to 60 minutes BEFORE the first meal of the day (morning breakfast) on an empty stomach with a full glass of water.",
+    "common_side_effects": [
+      "Headache",
+      "Diarrhea",
+      "Flatulence",
+      "Constipation"
+    ],
+    "contraindications": [
+      "Hypersensitivity to substituted benzimidazoles"
+    ],
+    "interactions": [
+      "Clopidogrel (attenuated antiplatelet effect)",
+      "Ketoconazole",
+      "Methotrexate",
+      "Iron salts"
+    ],
+    "shorthand_codes": [
+      "Pan 40",
+      "Panto",
+      "PPI",
+      "Cap Pan-D"
+    ]
+  },
+  "omeprazole": {
+    "generic_name": "Omeprazole",
+    "brand_names": [
+      "Prilosec",
+      "Omez",
+      "Omee",
+      "Losec"
+    ],
+    "category": "Proton Pump Inhibitor (PPI)",
+    "purpose": "Heartburn, peptic ulcer disease, GERD, and Zollinger-Ellison syndrome; H. pylori eradication regimens.",
+    "dosage_warning": "Standard dose is 20mg to 40mg daily. Swallow capsules whole; do not open, crush, or chew. Limit self-medication to 14-day courses unless under medical supervision.",
+    "food_instructions": "Take 30-60 minutes before breakfast with plain water.",
+    "common_side_effects": [
+      "Nausea",
+      "Abdominal discomfort",
+      "Headache",
+      "Dizziness"
+    ],
+    "contraindications": [
+      "Concomitant use with rilpivirine or nelfinavir"
+    ],
+    "interactions": [
+      "Diazepam",
+      "Warfarin",
+      "Phenytoin",
+      "Clopidogrel"
+    ],
+    "shorthand_codes": [
+      "Omez",
+      "Omep",
+      "Cap Omez"
+    ]
+  },
+  "metformin": {
+    "generic_name": "Metformin Hydrochloride",
+    "brand_names": [
+      "Glucophage",
+      "Glycomet",
+      "Fortamet",
+      "Obimet"
+    ],
+    "category": "Biguanide Antidiabetic",
+    "purpose": "First-line oral management of Type 2 Diabetes Mellitus; improves glycemic control by decreasing hepatic glucose production and increasing insulin sensitivity.",
+    "dosage_warning": "Typically started at 500mg once or twice daily and titrated up to 2000mg/day max. Rare but serious risk: Lactic Acidosis, especially in renal/hepatic insufficiency. Discontinue temporarily prior to iodinated contrast radiologic procedures.",
+    "food_instructions": "MANDATORY: Take with or immediately after meals to reduce gastrointestinal side effects (nausea, metallic taste, diarrhea). Extended-release (ER) forms should be swallowed whole with dinner.",
+    "common_side_effects": [
+      "Diarrhea",
+      "Nausea/vomiting",
+      "Abdominal bloating",
+      "Metallic taste",
+      "Vitamin B12 deficiency (long-term)"
+    ],
+    "contraindications": [
+      "Severe renal impairment (eGFR < 30 mL/min/1.73m²)",
+      "Acute/chronic metabolic acidosis",
+      "Severe congestive heart failure"
+    ],
+    "interactions": [
+      "Contrast media",
+      "Cimetidine",
+      "Furosemide",
+      "Alcohol"
+    ],
+    "shorthand_codes": [
+      "Met",
+      "Glycomet",
+      "Met-500",
+      "Glucophage"
+    ]
+  },
+  "glimepiride": {
+    "generic_name": "Glimepiride",
+    "brand_names": [
+      "Amaryl",
+      "Glimy",
+      "Zoryl",
+      "Glimisave"
+    ],
+    "category": "Second-Generation Sulfonylurea Antidiabetic",
+    "purpose": "Lowering blood glucose in patients with Type 2 Diabetes by stimulating insulin secretion from pancreatic beta cells.",
+    "dosage_warning": "1mg to 4mg once daily. High risk of HYPOGLYCEMIA (low blood sugar: dizziness, shakiness, sweating, confusion). Always carry fast-acting carbohydrates (candy/glucose tablets).",
+    "food_instructions": "MANDATORY: Take with breakfast or the first main meal of the day. NEVER skip meals after taking this medicine.",
+    "common_side_effects": [
+      "Hypoglycemia",
+      "Weight gain",
+      "Dizziness",
+      "Mild nausea"
+    ],
+    "contraindications": [
+      "Type 1 Diabetes",
+      "Diabetic ketoacidosis (DKA)",
+      "Severe sulfa allergy"
+    ],
+    "interactions": [
+      "Beta-blockers (may mask hypoglycemia symptoms)",
+      "NSAIDs",
+      "Fluconazole",
+      "Alcohol"
+    ],
+    "shorthand_codes": [
+      "Glim",
+      "Amaryl",
+      "Tab Glimepiride"
+    ]
+  },
+  "amlodipine": {
+    "generic_name": "Amlodipine Besylate",
+    "brand_names": [
+      "Norvasc",
+      "Amlong",
+      "Amtas",
+      "Stamlo"
+    ],
+    "category": "Dihydropyridine Calcium Channel Blocker (CCB)",
+    "purpose": "Treatment of systemic hypertension (high blood pressure) and chronic stable angina / coronary artery disease.",
+    "dosage_warning": "Standard dose is 2.5mg to 10mg once daily. Abrupt discontinuation may cause rebound hypertension. Inform doctor if peripheral edema (swelling in ankles or feet) occurs.",
+    "food_instructions": "Take at the same time each day (morning or evening), with or without food. Avoid excessive grapefruit juice consumption.",
+    "common_side_effects": [
+      "Peripheral edema (ankle swelling)",
+      "Flushing",
+      "Dizziness",
+      "Palpitations",
+      "Fatigue"
+    ],
+    "contraindications": [
+      "Severe hypotension",
+      "Cardiogenic shock",
+      "Severe aortic stenosis"
+    ],
+    "interactions": [
+      "Simvastatin (cap simvastatin at 20mg/day)",
+      "CYP3A4 inhibitors (clarithromycin)",
+      "Diltiazem"
+    ],
+    "shorthand_codes": [
+      "Amlo",
+      "Amlong",
+      "Amtas-5"
+    ]
+  },
+  "telmisartan": {
+    "generic_name": "Telmisartan",
+    "brand_names": [
+      "Micardis",
+      "Telma",
+      "Telsartan",
+      "Creser"
+    ],
+    "category": "Angiotensin II Receptor Blocker (ARB)",
+    "purpose": "Management of essential hypertension and cardiovascular risk reduction in patients unable to take ACE inhibitors.",
+    "dosage_warning": "Standard dose is 20mg to 80mg once daily. Black-box warning: FETAL TOXICITY (strictly contraindicated in pregnancy). Monitor serum potassium and renal function periodically.",
+    "food_instructions": "Take once daily at the same time with or without food. Maintain adequate hydration.",
+    "common_side_effects": [
+      "Dizziness/lightheadedness upon standing (orthostatic hypotension)",
+      "Back pain",
+      "Sinusitis",
+      "Hyperkalemia"
+    ],
+    "contraindications": [
+      "Pregnancy (2nd and 3rd trimesters)",
+      "Bilateral renal artery stenosis"
+    ],
+    "interactions": [
+      "Potassium supplements / potassium-sparing diuretics (hyperkalemia risk)",
+      "NSAIDs",
+      "Lithium"
+    ],
+    "shorthand_codes": [
+      "Telma",
+      "Telmi",
+      "Telma-40"
+    ]
+  },
+  "atorvastatin": {
+    "generic_name": "Atorvastatin Calcium",
+    "brand_names": [
+      "Lipitor",
+      "Atorva",
+      "Storvas",
+      "Tonact"
+    ],
+    "category": "HMG-CoA Reductase Inhibitor (Statin)",
+    "purpose": "Primary and secondary prevention of cardiovascular events; reduction of elevated total cholesterol, LDL-C, and triglycerides in hyperlipidemia.",
+    "dosage_warning": "10mg to 80mg once daily. Immediately report unexplained muscle pain, tenderness, or weakness (rare risk of rhabdomyolysis). Periodic liver function monitoring recommended.",
+    "food_instructions": "Take once daily at any time of day (evening is traditional), with or without food. Avoid drinking large quantities of grapefruit juice (>1 liter/day).",
+    "common_side_effects": [
+      "Myalgia (muscle ache)",
+      "Joint pain",
+      "Diarrhea",
+      "Elevated liver enzymes",
+      "Dyspepsia"
+    ],
+    "contraindications": [
+      "Active liver disease",
+      "Pregnancy and breastfeeding"
+    ],
+    "interactions": [
+      "Clarithromycin",
+      "Cyclosporine",
+      "Gemfibrozil",
+      "Protease inhibitors"
+    ],
+    "shorthand_codes": [
+      "Ator",
+      "Lipitor",
+      "Atorva-10",
+      "Atorva-20"
+    ]
+  },
+  "ibuprofen": {
+    "generic_name": "Ibuprofen",
+    "brand_names": [
+      "Advil",
+      "Motrin",
+      "Brufen",
+      "Ibugesic"
+    ],
+    "category": "Nonsteroidal Anti-inflammatory Drug (NSAID)",
+    "purpose": "Relief of inflammatory pain, arthritis, dysmenorrhea (menstrual cramps), headache, and fever.",
+    "dosage_warning": "Standard adult dose is 200mg-400mg every 4-6 hours (max 1200mg OTC, or 2400mg under prescription). Prolonged use increases risk of gastrointestinal bleeding, peptic ulcers, and cardiovascular thrombotic events.",
+    "food_instructions": "MANDATORY: Always take with meals, milk, or immediately after eating to protect gastric mucosa and avoid stomach irritation.",
+    "common_side_effects": [
+      "Stomach upset",
+      "Heartburn",
+      "Nausea",
+      "Dizziness",
+      "Fluid retention"
+    ],
+    "contraindications": [
+      "Active peptic ulcer disease or GI bleeding",
+      "Severe heart failure",
+      "Severe renal impairment",
+      "Third trimester of pregnancy"
+    ],
+    "interactions": [
+      "Aspirin",
+      "Anticoagulants (warfarin)",
+      "ACE inhibitors",
+      "Lithium",
+      "Corticosteroids"
+    ],
+    "shorthand_codes": [
+      "Ibu",
+      "Brufen",
+      "Brufen-400",
+      "Tab Brufen"
+    ]
+  },
+  "aspirin": {
+    "generic_name": "Acetylsalicylic Acid (Aspirin)",
+    "brand_names": [
+      "Ecosprin",
+      "Bayer",
+      "Disprin",
+      "Loprin"
+    ],
+    "category": "Antiplatelet / NSAID",
+    "purpose": "Secondary prevention of myocardial infarction (heart attack) and ischemic stroke (low-dose 75-150mg); acute pain/fever relief (high-dose 325-650mg).",
+    "dosage_warning": "Low-dose cardioprotection is typically 75mg-81mg daily. High risk of GI mucosal ulceration and bleeding. DO NOT give to children/teenagers with viral illness due to risk of Reye's syndrome.",
+    "food_instructions": "Take with or immediately after food and a full glass of water. Enteric-coated formulations (e.g. Ecosprin) must be swallowed whole without chewing.",
+    "common_side_effects": [
+      "Gastric irritation",
+      "Dyspepsia",
+      "Easy bruising",
+      "Occult gastrointestinal bleeding"
+    ],
+    "contraindications": [
+      "Active peptic ulcer",
+      "Hemophilia / bleeding disorders",
+      "Children with viral syndromes"
+    ],
+    "interactions": [
+      "Warfarin / Heparin / DOACs",
+      "Other NSAIDs",
+      "Alcohol",
+      "Methotrexate"
+    ],
+    "shorthand_codes": [
+      "ASA",
+      "Ecosprin",
+      "Ecosprin-75",
+      "Disprin"
+    ]
+  },
+  "salbutamol": {
+    "generic_name": "Salbutamol (Albuterol)",
+    "brand_names": [
+      "Ventolin",
+      "Asthalin",
+      "ProAir",
+      "Aerolin"
+    ],
+    "category": "Short-Acting Beta-2 Agonist (SABA) Bronchodilator",
+    "purpose": "Rapid relief and rescue treatment of acute bronchospasm in asthma, chronic obstructive pulmonary disease (COPD), and exercise-induced bronchospasm.",
+    "dosage_warning": "Inhalation: 1-2 puffs (100mcg/puff) as needed for acute wheezing/shortness of breath. If requiring >2 times/week regularly, consult clinician for asthma step-up therapy. May cause temporary tremors and tachycardia.",
+    "food_instructions": "Inhaler use is independent of food intake. Rinse mouth with water after use.",
+    "common_side_effects": [
+      "Fine tremor (especially hands)",
+      "Tachycardia (fast heart rate)",
+      "Nervousness",
+      "Headache"
+    ],
+    "contraindications": [
+      "Known hypersensitivity to albuterol"
+    ],
+    "interactions": [
+      "Non-selective beta-blockers (propranolol - may cause severe bronchospasm)",
+      "Diuretics (hypokalemia risk)"
+    ],
+    "shorthand_codes": [
+      "Asthalin",
+      "Ventolin",
+      "SABA",
+      "SOS Inhaler"
+    ]
+  },
+  "ondansetron": {
+    "generic_name": "Ondansetron",
+    "brand_names": [
+      "Zofran",
+      "Emeset",
+      "Vomistop",
+      "Zupridol"
+    ],
+    "category": "5-HT3 Receptor Antagonist Antiemetic",
+    "purpose": "Prevention and management of severe nausea and vomiting induced by gastroenteritis, chemotherapy, radiation therapy, and surgery.",
+    "dosage_warning": "Standard dose is 4mg to 8mg every 8 hours. Overuse or high IV doses may prolong the QT interval; use caution in patients with cardiac conduction abnormalities.",
+    "food_instructions": "May be taken with or without food. Orally disintegrating tablets (ODT) should be placed on the tongue and allowed to dissolve without chewing.",
+    "common_side_effects": [
+      "Constipation",
+      "Headache",
+      "Fatigue",
+      "Flushing sensation"
+    ],
+    "contraindications": [
+      "Concomitant use with apomorphine (causes profound hypotension)"
+    ],
+    "interactions": [
+      "Apomorphine",
+      "Antiarrhythmics",
+      "Serotonergic drugs (SSRIs/SNRIs - serotonin syndrome risk)"
+    ],
+    "shorthand_codes": [
+      "Emeset",
+      "Zofran",
+      "Tab Emeset 4"
+    ]
+  },
+  "levothyroxine": {
+    "generic_name": "Levothyroxine Sodium (T4)",
+    "brand_names": [
+      "Synthroid",
+      "Thyronorm",
+      "Eltroxin",
+      "Levoxyl"
+    ],
+    "category": "Synthetic Thyroid Hormone Replacement",
+    "purpose": "Treatment of primary, secondary, and tertiary hypothyroidism; pituitary TSH suppression in thyroid cancer management.",
+    "dosage_warning": "Dosage is individualized (25mcg to 200mcg daily) based on serum TSH tests. Overdosage leads to hyperthyroidism symptoms (palpitations, weight loss, heat intolerance, arrhythmia). Narrow therapeutic index drug.",
+    "food_instructions": "CRITICAL STRICT RULE: Must be taken FIRST THING in the morning on an EMPTY stomach with plain water, at least 30 to 60 minutes before breakfast, coffee, tea, calcium, iron, or other medications.",
+    "common_side_effects": [
+      "Usually none at correct dose; symptoms of thyrotoxicosis if over-replaced"
+    ],
+    "contraindications": [
+      "Uncorrected adrenal insufficiency",
+      "Acute untreated myocardial infarction"
+    ],
+    "interactions": [
+      "Calcium carbonate",
+      "Ferrous sulfate (iron)",
+      "Soy products",
+      "PPIs",
+      "Cholestyramine (separate by >= 4 hours)"
+    ],
+    "shorthand_codes": [
+      "Thyronorm",
+      "T4",
+      "Synthroid",
+      "Eltroxin"
+    ]
+  },
+  "doxycycline": {
+    "generic_name": "Doxycycline Hyclate / Monohydrate",
+    "brand_names": [
+      "Vibramycin",
+      "Doryx",
+      "Doxt-SL",
+      "Microdox"
+    ],
+    "category": "Tetracycline Broad-Spectrum Antibiotic",
+    "purpose": "Treatment of respiratory tract infections, acne vulgaris, tick-borne diseases (Lyme disease, scrub typhus), malaria prophylaxis, and chlamydia.",
+    "dosage_warning": "Typically 100mg once or twice daily. Must remain UPRIGHT for at least 30 minutes after taking to prevent severe pill-induced esophageal ulceration. Causes photosensitivity (sunburn risk). Avoid in children <8 years and pregnant women (teeth discoloration).",
+    "food_instructions": "Take with a full glass of water (240ml). Can take with food if stomach upset occurs, but AVOID dairy products, milk, antacids, or iron supplements within 2 hours of ingestion (chelates and blocks absorption).",
+    "common_side_effects": [
+      "Esophageal irritation",
+      "Nausea",
+      "Sun sensitivity (phototoxicity)",
+      "Vaginal candidiasis"
+    ],
+    "contraindications": [
+      "Pregnancy",
+      "Children under 8 years of age (tooth enamel hypoplasia)"
+    ],
+    "interactions": [
+      "Dairy / Calcium",
+      "Antacids (aluminum/magnesium)",
+      "Oral retinoids (isotretinoin - pseudotumor cerebri risk)"
+    ],
+    "shorthand_codes": [
+      "Doxy",
+      "Doxt",
+      "Cap Doxy"
+    ]
+  },
+  "clonazepam": {
+    "generic_name": "Clonazepam",
+    "brand_names": [
+      "Klonopin",
+      "Rivotril",
+      "Zapiz",
+      "Clona"
+    ],
+    "category": "Benzodiazepine Anticonvulsant & Anxiolytic (Schedule IV Controlled Substance)",
+    "purpose": "Management of panic disorders, seizure disorders (myoclonus, Lennox-Gastaut), and acute severe anxiety.",
+    "dosage_warning": "0.25mg to 2mg daily. High risk of physical dependence, tolerance, and addiction. STRICT WARNING: Do not discontinue abruptly (severe rebound seizures/withdrawal). NEVER combine with alcohol or opioids (fatal respiratory depression).",
+    "food_instructions": "Take with or without food with water. Evening or split dosing commonly recommended due to sedative effect.",
+    "common_side_effects": [
+      "Drowsiness",
+      "Ataxia (clumsiness/loss of coordination)",
+      "Dizziness",
+      "Cognitive impairment",
+      "Fatigue"
+    ],
+    "contraindications": [
+      "Severe hepatic impairment",
+      "Acute narrow-angle glaucoma",
+      "Severe respiratory insufficiency"
+    ],
+    "interactions": [
+      "Alcohol",
+      "Opioids",
+      "Sedatives/Hypnotics",
+      "Other CNS depressants"
+    ],
+    "shorthand_codes": [
+      "Clon",
+      "Zapiz",
+      "Rivotril"
+    ]
   }
 }

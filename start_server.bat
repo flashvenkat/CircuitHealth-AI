@@ -1,10 +1,18 @@
 @echo off
-title CircuitHealth AI Backend Server
-cd /d "C:\Users\mrush\CircuitHealthAI\laptop_backend"
-call venv\Scripts\activate.bat
+title VoiceMed Open Backend Server
+cd /d "%~dp0"
 
-echo Starting Uvicorn Server in background...
-start /b uvicorn server:app --reload
+echo ========================================================
+echo   Starting VoiceMed Open Backend Server
+echo ========================================================
+echo.
+
+if exist venv\Scripts\activate.bat (
+    call venv\Scripts\activate.bat
+)
+
+echo Starting Uvicorn FastAPI Server on http://localhost:8000 ...
+start /b uvicorn server:app --reload --host 0.0.0.0 --port 8000
 
 echo Waiting 3 seconds for server startup...
 timeout /t 3 /nobreak >nul
