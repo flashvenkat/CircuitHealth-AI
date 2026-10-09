@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Writes the premium VoiceMed Open index.html to disk."""
+"""Writes the premium VoiceMed index.html to disk."""
 
 HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VoiceMed Open — Intelligent Medical Decision Support</title>
-  <meta name="description" content="VoiceMed Open: Secure, offline-first multilingual clinical companion. Decode prescriptions, audit hospital bills in INR, understand insurance, and get triage guidance." />
+  <title>VoiceMed — Intelligent Medical Decision Support</title>
+  <meta name="description" content="VoiceMed: A privacy-minded clinical companion. Decode prescriptions, audit hospital bills in INR, understand insurance, and get triage guidance." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -303,10 +303,10 @@ HTML = r"""<!DOCTYPE html>
 <div id="toastContainer" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <!-- AUTH OVERLAY -->
-<div id="authView" role="main" aria-label="VoiceMed Open Onboarding">
+<div id="authView" role="main" aria-label="VoiceMed Onboarding">
   <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
     <div class="auth-logo" aria-hidden="true">&#127973;</div>
-    <h1 class="auth-title" id="authTitle">VoiceMed Open</h1>
+    <h1 class="auth-title" id="authTitle">VoiceMed</h1>
     <p class="auth-subtitle">Secure, offline-first multilingual clinical companion</p>
     <form id="authForm" class="auth-form" onsubmit="handleAuth(event)" novalidate>
       <div>
@@ -336,7 +336,7 @@ HTML = r"""<!DOCTYPE html>
 </div>
 
 <!-- MAIN DASHBOARD -->
-<div id="mainApp" class="hidden" aria-label="VoiceMed Open Clinical Dashboard">
+<div id="mainApp" class="hidden" aria-label="VoiceMed Clinical Dashboard">
 
   <header id="appHeader" role="banner">
     <div class="header-inner">
@@ -344,7 +344,7 @@ HTML = r"""<!DOCTYPE html>
         <div class="header-logo" aria-hidden="true">&#127973;</div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="header-brand-name">VoiceMed Open</span>
+            <span class="header-brand-name">VoiceMed</span>
             <span class="badge badge-cyan">v2.1 PRO</span>
           </div>
           <div class="header-brand-sub" id="profileDisplay">Clinical Decision Support</div>
@@ -509,7 +509,7 @@ HTML = r"""<!DOCTYPE html>
   </nav>
 
   <div class="disclaimer-bar" role="note">
-    &#9877;&#65039; <strong>Medical Disclaimer:</strong> VoiceMed Open is for educational decision-support only. Not a substitute for professional medical advice, diagnosis, or treatment.
+    &#9877;&#65039; <strong>Medical Disclaimer:</strong> VoiceMed is for educational decision-support only. Not a substitute for professional medical advice, diagnosis, or treatment.
   </div>
 
 </div><!-- end mainApp -->

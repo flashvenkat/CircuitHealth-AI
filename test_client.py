@@ -1,7 +1,7 @@
 """
-VoiceMed Open — Comprehensive Test Client
+VoiceMed — Comprehensive Test Client
 =========================================
-Tests all four core clinical AI features via `/api/process-medical`:
+Tests all four deterministic clinical analysis features via `/api/process-medical`:
   1. "prescription"   - Shorthand decoding, dosage threshold checks & food safety notes.
   2. "bill_analysis"  - Itemized cost breakdown (INR ₹), consumable markup flags & audit guidance.
   3. "insurance"      - Policy clause simplification, room rent caps (1% rule) & TPA checklist.
@@ -53,8 +53,8 @@ def print_json(data: Any, indent: int = 2):
 
 
 def check_server_health() -> bool:
-    """Check whether the VoiceMed Open backend server is reachable and healthy."""
-    print_banner("STEP 1: Checking VoiceMed Open Backend Liveness (127.0.0.1:8000)", "-")
+    """Check whether the VoiceMed backend server is reachable and healthy."""
+    print_banner("STEP 1: Checking VoiceMed Backend Liveness (127.0.0.1:8000)", "-")
     url = f"{API_BASE_URL}/api/health"
     try:
         start_t = time.time()
@@ -126,7 +126,7 @@ def test_process_medical_endpoint(
 
             print(f"Model/Engine Used: {data.get('model_used', 'N/A')} (Backend exec: {data.get('execution_time_ms', 'N/A')} ms)")
             print(f"Currency Format:   {data.get('currency', 'INR (₹)')}")
-            print(f"RAG Matched Drugs: {data.get('rag_matches', [])}")
+            print(f"Matched Local Drug Profiles: {data.get('matched_profiles', [])}")
 
             print("\n" + "="*30 + " Patient Summary " + "="*30)
             print(data.get("summary_text", ""))
@@ -170,7 +170,7 @@ def test_process_medical_endpoint(
 
 def test_audio_generation(language: str, text: str):
     """Test the dedicated /api/generate-audio endpoint with multilingual fallback."""
-    print_banner(f"🎙️ Testing Audio Generation Endpoint ({language})", "-")
+    print_banner(f"🎙️ Testing Optional Audio Generation Endpoint ({language})", "-")
     url = f"{API_BASE_URL}/api/generate-audio"
     payload = {"text": text, "language": language}
     try:

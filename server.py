@@ -1,9 +1,9 @@
 """
-VoiceMed Open — Open-Source Multilingual Healthcare AI Assistant Backend
+VoiceMed — Clinical Decision Support Backend
 ========================================================================
-A deterministic, privacy-first, local-SLM powered clinical assistant backend.
-Provides 4 core healthcare pillars with Indian Rupee (₹ / INR) localization
-and resilient Multilingual Audio Generation (ElevenLabs + Web Speech Fallback):
+A deterministic, privacy-first, local-rules clinical assistant backend.
+Provides 4 core healthcare tools with Indian Rupee (₹ / INR) localization
+and optional multilingual audio generation:
   1. "prescription"   - Shorthand decoding, dosage checks & food safety notes.
   2. "bill_analysis"  - Itemized cost breakdown (₹ / INR), consumable markup audit & billing dispute guidance.
   3. "insurance"      - Policy clause simplification, room rent caps, copay & TPA claims.
@@ -26,8 +26,8 @@ from pydantic import BaseModel, Field
 # App Initialization & Middleware
 # ---------------------------------------------------------------------------
 app = FastAPI(
-    title="VoiceMed Open",
-    description="Open-source, privacy-first, multilingual healthcare assistant backend powered by local SLMs, deterministic clinical RAG, and resilient TTS.",
+    title="VoiceMed",
+    description="Clinical paperwork explainer using deterministic local rules, INR bill categorization, and optional speech output.",
     version="2.1.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -46,9 +46,6 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DRUGS_FILE = os.path.join(BASE_DIR, "drugs.json")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-DEFAULT_MODEL = os.getenv("VOICEMED_MODEL", "qwen2.5:1.5b")
-FAST_PARSER_MODEL = os.getenv("VOICEMED_FAST_MODEL", "llama3.2:1b")
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
 ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")  # Default Rachel / Multilingual
 
@@ -127,9 +124,13 @@ LANGUAGE_SPEECH_MAP = {
 # Pydantic Request & Response Schemas
 # ---------------------------------------------------------------------------
 class MedicalRequest(BaseModel):
-    feature: Literal["prescription", "bill_analysis", "insurance", "pocket_doctor"] = Field(
-        ...,
+    feature: Optional[Literal["prescription", "bill_analysis", "insurance", "pocket_doctor"]] = Field(
+        default=None,
         description="The medical feature to execute: 'prescription', 'bill_analysis', 'insurance', or 'pocket_doctor'."
+    )
+    feature_type: Optional[Literal["prescription", "bill_analysis", "insurance", "pocket_doctor"]] = Field(
+        default=None,
+        description="Backward-compatible alias for feature."
     )
     input_text: str = Field(
         ...,
@@ -144,6 +145,10 @@ class MedicalRequest(BaseModel):
         default=None,
         description="Optional additional context such as patient age, pre-existing conditions, known allergies, or insurer name."
     )
+
+    @property
+    def resolved_feature(self) -> Optional[Literal["prescription", "bill_analysis", "insurance", "pocket_doctor"]]:
+        return self.feature or self.feature_type
 
 class AudioGenerationRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Text to synthesize to speech.")
@@ -161,6 +166,7 @@ class AudioConfig(BaseModel):
 class MedicalResponse(BaseModel):
     feature: str
     language: str
+    summary_language: str = "English"
     currency: str = "INR (₹)"
     structured_data: Dict[str, Any]
     summary_text: str
@@ -168,16 +174,22 @@ class MedicalResponse(BaseModel):
     clinical_disclaimer: str
     execution_time_ms: float
     model_used: str
-    rag_matches: List[str]
+    matched_profiles: List[str]
+    rag_matches: List[str] = Field(default_factory=list, deprecated=True)
 
 # ---------------------------------------------------------------------------
 # Resilient Audio Generator (ElevenLabs + Web Speech Fallback)
 # ---------------------------------------------------------------------------
-def generate_multilingual_audio(text: str, language: str = "English", voice_id: Optional[str] = None) -> AudioConfig:
+def generate_multilingual_audio(
+    text: str,
+    language: str = "English",
+    voice_id: Optional[str] = None,
+    allow_external: bool = True
+) -> AudioConfig:
     """
     Synthesize audio using ElevenLabs if an API key is provided and valid.
     If the key is missing, invalid, or fails, gracefully return a Web Speech API
-    fallback payload for `window.speechSynthesis` to guarantee zero downtime.
+    fallback payload for `window.speechSynthesis` when external audio is unavailable.
     """
     lang_key = language.strip().lower() if language else "english"
     speech_meta = LANGUAGE_SPEECH_MAP.get(lang_key, {
@@ -202,7 +214,7 @@ def generate_multilingual_audio(text: str, language: str = "English", voice_id: 
     }
 
     # Attempt ElevenLabs TTS if key is configured
-    if ELEVENLABS_API_KEY and len(ELEVENLABS_API_KEY.strip()) > 5:
+    if allow_external and ELEVENLABS_API_KEY and len(ELEVENLABS_API_KEY.strip()) > 5:
         target_voice = voice_id or ELEVENLABS_VOICE_ID
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{target_voice}"
         headers = {
@@ -246,10 +258,10 @@ def generate_multilingual_audio(text: str, language: str = "English", voice_id: 
     )
 
 # ---------------------------------------------------------------------------
-# Core RAG & Helper Functions
+# Local Rule Engine Helpers
 # ---------------------------------------------------------------------------
-def retrieve_drug_facts(text: str) -> tuple[List[Dict[str, Any]], List[str]]:
-    """Scan incoming text for matched drugs from drugs.json and return structured info and string notes."""
+def lookup_drug_profiles(text: str) -> tuple[List[Dict[str, Any]], List[str]]:
+    """Match known medicine names to reviewed local formulary profiles."""
     text_lower = text.lower()
     matched_entries = []
     matched_names = []
@@ -297,113 +309,67 @@ def decode_medical_shorthand(text: str) -> List[Dict[str, str]]:
             decoded.append({"shorthand": code.upper(), "meaning": explanation})
     return decoded
 
-def call_ollama(model_name: str, prompt: str, system_prompt: Optional[str] = None) -> Optional[str]:
-    """Execute generation request to local Ollama instance with timeout and fallback handling."""
-    payload: Dict[str, Any] = {
-        "model": model_name,
-        "prompt": prompt,
-        "stream": False,
-        "options": {
-            "temperature": 0.2,
-            "top_p": 0.9
-        }
-    }
-    if system_prompt:
-        payload["system"] = system_prompt
-
-    try:
-        res = requests.post(
-            f"{OLLAMA_BASE_URL}/api/generate",
-            json=payload,
-            timeout=18
-        )
-        if res.status_code == 200:
-            return res.json().get("response", "").strip()
-    except Exception as e:
-        print(f"[VoiceMed Ollama Notice] Local SLM ({model_name}) call bypassed: {e}")
-    return None
+def symptom_present(text: str, symptom: str) -> bool:
+    """Match an explicit symptom phrase unless it is immediately negated."""
+    escaped_symptom = re.escape(symptom)
+    if not re.search(r"\b" + escaped_symptom + r"\b", text):
+        return False
+    negation = r"\b(?:no|not|denies|without|negative for)\b(?:\W+\w+){0,3}\W+" + escaped_symptom + r"\b"
+    return re.search(negation, text) is None
 
 # ---------------------------------------------------------------------------
-# Feature Processors (SLM Cascading + Deterministic Rule Engine Fallback)
+# Feature Processors (Deterministic Local Rules)
 # ---------------------------------------------------------------------------
 
 def process_prescription(req: MedicalRequest) -> tuple[Dict[str, Any], str, List[str]]:
-    """1. Prescription Decoding: Shorthand, dosages, food instructions, RAG matching."""
-    matched_drugs, matched_names = retrieve_drug_facts(req.input_text)
+    """1. Prescription decoding: shorthand, formulary facts, dosage notes, and food timing."""
+    matched_drugs, matched_names = lookup_drug_profiles(req.input_text)
     decoded_shorthands = decode_medical_shorthand(req.input_text)
+    context = req.user_context or {}
+    allergy_notes = context.get("allergies_or_notes", context.get("allergies", ""))
+    if isinstance(allergy_notes, list):
+        allergy_notes = " ".join(str(item) for item in allergy_notes)
+    allergy_notes = str(allergy_notes).lower()
+    allergy_flags = []
+    for drug in matched_drugs:
+        for contraindication in drug["contraindications"]:
+            terms = [word for word in re.findall(r"[a-z]{5,}", contraindication.lower()) if word not in {"history", "hepatic", "dysfunction"}]
+            if any(re.search(r"\b" + re.escape(term) + r"\b", allergy_notes) for term in terms):
+                allergy_flags.append(f"{drug['generic_name']}: patient note matches contraindication '{contraindication}'. Confirm with a clinician before use.")
 
-    rag_context_str = ""
-    for d in matched_drugs:
-        rag_context_str += (
-            f"• Medication: {d['generic_name']} ({', '.join(d['brand_names'])})\n"
-            f"  Category: {d['category']}\n"
-            f"  Purpose: {d['purpose']}\n"
-            f"  Critical Safety/Dose: {d['dosage_warning']}\n"
-            f"  Food Timing: {d['food_instructions']}\n"
-            f"  Interactions: {', '.join(d['interactions'])}\n\n"
+    bullets = []
+    if matched_drugs:
+        for d in matched_drugs:
+            bullets.append(
+                f"💊 **{d['generic_name']}** ({d['category']})\n"
+                f"  • **Purpose:** {d['purpose']}\n"
+                f"  • **How to take:** {d['food_instructions']}\n"
+                f"  • **Safety & Dosage:** {d['dosage_warning']}"
+            )
+    else:
+        bullets.append(
+            "📋 **Prescription Information:**\n"
+            "  • No exact medicine profile was found in the local formulary.\n"
+            "  • Review the prescription with your doctor or pharmacist.\n"
+            "  • Confirm medicine names, food instructions, and dosage with your prescriber."
         )
 
-    shorthand_context_str = "\n".join([f"- {s['shorthand']}: {s['meaning']}" for s in decoded_shorthands])
+    if decoded_shorthands:
+        codes_text = "\n".join([f"  • **{s['shorthand']}** = {s['meaning']}" for s in decoded_shorthands])
+        bullets.append(f"⏱️ **Decoded Doctor Shorthand:**\n{codes_text}")
+    if allergy_flags:
+        bullets.append("⚠️ **Potential allergy / contraindication match — verify before use:**\n" + "\n".join(f"  • {flag}" for flag in allergy_flags))
 
-    system_prompt = (
-        f"You are VoiceMed Open, a compassionate, expert clinical pharmacist assistant. "
-        f"IMPORTANT: You MUST translate and output your ENTIRE response directly in {req.language}. Do not use English unless the requested language is English. "
-        f"Translate and explain the patient's prescription clearly in {req.language}. "
-        f"Ground your answer strictly in the verified clinical facts provided below. "
-        f"Do NOT hallucinate drugs or dosages not mentioned. "
-        f"Always clearly list: 1. Medicine Name & Purpose, 2. How and When to take (with exact food timing), "
-        f"3. Crucial Safety Warnings & Interactions."
-    )
-
-    user_prompt = f"""
-VERIFIED CLINICAL KNOWLEDGE (RAG GROUND TRUTH):
-{rag_context_str if rag_context_str else "No exact drug matches found in local DB. Apply safe clinical general principles."}
-
-DECODED PRESCRIPTION CODES:
-{shorthand_context_str if shorthand_context_str else "Standard prescription phrasing detected."}
-
-PRESCRIPTION TEXT / OCR INPUT:
-{req.input_text}
-
-Provide an easy-to-read, structured summary for the patient in {req.language}.
-FINAL INSTRUCTION: Your ENTIRE response MUST be in {req.language}. Do not output any English text unless the requested language is English.
-"""
-
-    ai_response = call_ollama(DEFAULT_MODEL, user_prompt, system_prompt)
-
-    if not ai_response:
-        # High-fidelity deterministic fallback
-        bullets = []
-        if matched_drugs:
-            for d in matched_drugs:
-                bullets.append(
-                    f"💊 **{d['generic_name']}** ({d['category']})\n"
-                    f"  • **Purpose:** {d['purpose']}\n"
-                    f"  • **How to take:** {d['food_instructions']}\n"
-                    f"  • **Safety & Dosage:** {d['dosage_warning']}"
-                )
-        else:
-            bullets.append(
-                "📋 **Prescription Information:**\n"
-                "  • Please review your prescription with your doctor or pharmacist.\n"
-                "  • Take all prescribed antibiotics for the complete duration.\n"
-                "  • Always confirm food instructions and specific dosage."
-            )
-
-        if decoded_shorthands:
-            codes_text = "\n".join([f"  • **{s['shorthand']}** = {s['meaning']}" for s in decoded_shorthands])
-            bullets.append(f"⏱️ **Decoded Doctor Shorthand:**\n{codes_text}")
-
-        ai_response = "\n\n".join(bullets)
+    summary_text = "\n\n".join(bullets)
 
     structured_data = {
         "matched_drugs": matched_drugs,
         "decoded_shorthands": decoded_shorthands,
         "total_medicines_detected": len(matched_drugs),
-        "safety_flags": [d["dosage_warning"] for d in matched_drugs if "dosage_warning" in d]
+        "safety_flags": [d["dosage_warning"] for d in matched_drugs if "dosage_warning" in d] + allergy_flags
     }
 
-    return structured_data, ai_response, matched_names
+    return structured_data, summary_text, matched_names
 
 def process_bill_analysis(req: MedicalRequest) -> tuple[Dict[str, Any], str, List[str]]:
     """2. Hospital Bill Analysis: Itemized cost breakdown localized in Indian Rupees (₹ / INR), consumable markup audit."""
@@ -429,10 +395,12 @@ def process_bill_analysis(req: MedicalRequest) -> tuple[Dict[str, Any], str, Lis
         # Regex extracting numbers preceded by ₹, Rs., Rs, INR or standalone amounts
         numbers = re.findall(r'(?:[₹Rs\.INR\$\€\£\s]*)\s*(\d+(?:,\d+)*(?:\.\d{2})?)', line, re.IGNORECASE)
         cost_val = None
+        is_bill_total = bool(re.search(r"\b(sub\s*total|grand\s*total|total|amount\s*due|balance)\b", lower))
         if numbers:
             try:
                 cost_val = float(numbers[-1].replace(",", ""))
-                total_parsed_amount += cost_val
+                if not is_bill_total:
+                    total_parsed_amount += cost_val
             except Exception:
                 cost_val = None
 
@@ -454,40 +422,21 @@ def process_bill_analysis(req: MedicalRequest) -> tuple[Dict[str, Any], str, Lis
         else:
             categories["other_charges"].append(item_entry)
 
-    system_prompt = (
-        f"You are VoiceMed Open, a patient billing advocate and forensic medical bill analyst specialized in Indian healthcare billing. "
-        f"IMPORTANT: You MUST translate and output your ENTIRE response directly in {req.language}. Do not use English unless the requested language is English. "
-        f"Analyze the hospital bill text in {req.language}. "
-        f"IMPORTANT CURRENCY RULE: All amounts, estimates, tariffs, and cost breakdowns MUST strictly use Indian Rupees (₹ / INR), e.g. ₹10,000, ₹1,500, ₹500. "
-        f"1. Categorize all charges clearly in Indian Rupees (₹) (Room/ICU, Doctor fees, Pharmacy, Diagnostics, Procedures, Non-medical Consumables). "
-        f"2. Audit for potential duplicate charges, overbilling, or non-medical consumable markups. "
-        f"3. Provide actionable steps for the patient to dispute or negotiate questionable charges with the hospital TPA / billing desk."
+    summary_text = (
+        f"🧾 **Hospital Bill Breakdown & Rule-Based Audit ({req.language}) [Currency: INR (₹)]:**\n\n"
+        f"1. **Room & Nursing Care:** {len(categories['room_and_nursing'])} item(s) detected.\n"
+        f"2. **Doctor & Surgeon Consultation Fees:** {len(categories['consultation_doctor_fees'])} item(s) detected.\n"
+        f"3. **Diagnostic / Lab Investigations:** {len(categories['diagnostics_lab_radiology'])} item(s) detected.\n"
+        f"4. **Pharmacy & Infusions:** {len(categories['pharmacy_medications'])} item(s) detected.\n"
+        f"5. **Procedures & Surgery (OT):** {len(categories['procedure_ot_surgery'])} item(s) detected.\n"
+        f"6. **Non-Medical Consumables & Miscellaneous:** {len(categories['non_medical_consumables'])} item(s) flagged.\n"
+        f"7. **Parsed line-item total:** ₹{total_parsed_amount:,.2f}\n\n"
+        f"💡 **Review checklist:**\n"
+        f"• Request an itemized bill with hospital tariffs and manufacturer MRPs for medicines and consumables.\n"
+        f"• Ask your insurer whether non-medical consumables are covered by your policy.\n"
+        f"• Check that daily doctor visits match the documented rounds.\n"
+        f"• This is a categorization aid, not a finding of overbilling; compare each charge with your records and policy."
     )
-
-    user_prompt = f"""
-HOSPITAL BILL DATA / RECEIPT ITEMS (INDIAN RUPEES ₹ / INR):
-{req.input_text}
-
-Provide an itemized, transparent cost breakdown in Indian Rupees (₹) and audit recommendations in {req.language}.
-FINAL INSTRUCTION: Your ENTIRE response MUST be in {req.language}. Do not output any English text unless the requested language is English.
-"""
-
-    ai_response = call_ollama(DEFAULT_MODEL, user_prompt, system_prompt)
-
-    if not ai_response:
-        ai_response = (
-            f"🧾 **Hospital Bill Breakdown & Forensic Audit Summary ({req.language}) [Currency: INR (₹)]:**\n\n"
-            f"1. **Room & Nursing Care:** {len(categories['room_and_nursing'])} item(s) detected.\n"
-            f"2. **Doctor & Surgeon Consultation Fees:** {len(categories['consultation_doctor_fees'])} item(s) detected.\n"
-            f"3. **Diagnostic / Lab Investigations:** {len(categories['diagnostics_lab_radiology'])} item(s) detected.\n"
-            f"4. **Pharmacy & Infusions:** {len(categories['pharmacy_medications'])} item(s) detected.\n"
-            f"5. **Procedures & Surgery (OT):** {len(categories['procedure_ot_surgery'])} item(s) detected.\n"
-            f"6. **Non-Medical Consumables & Miscellaneous:** {len(categories['non_medical_consumables'])} item(s) flagged.\n\n"
-            f"💡 **Patient Advocate Recommendations (India / TPA Desk):**\n"
-            f"• Request an **Itemized Bill with Hospital Tariffs (GIPSA/ROHINI approved rates)** and manufacturer MRPs for medicines and surgical consumables.\n"
-            f"• Verify if insurance covers non-medical consumables (e.g. gloves, masks, PPE kits) under your IRDAI Non-Payables rider.\n"
-            f"• Check that daily doctor visit counts (₹) strictly match the actual physical rounds made by the consultant."
-        )
 
     structured_data = {
         "currency": "INR (₹)",
@@ -497,7 +446,7 @@ FINAL INSTRUCTION: Your ENTIRE response MUST be in {req.language}. Do not output
         "total_parsed_amount_inr": f"₹{total_parsed_amount:,.2f}" if total_parsed_amount > 0 else "Calculated from receipt"
     }
 
-    return structured_data, ai_response, []
+    return structured_data, summary_text, []
 
 def process_insurance(req: MedicalRequest) -> tuple[Dict[str, Any], str, List[str]]:
     """3. Insurance Simplifier: Decodes clauses, copays, deductibles, room rent caps (1% / 2%), claim terms."""
@@ -515,39 +464,19 @@ def process_insurance(req: MedicalRequest) -> tuple[Dict[str, Any], str, List[st
         if any(k in text_lower for k in keys):
             detected_clauses.append(clause)
 
-    system_prompt = (
-        f"You are VoiceMed Open, a consumer health insurance expert and patient rights advocate specialized in Indian health insurance (IRDAI guidelines). "
-        f"IMPORTANT: You MUST translate and output your ENTIRE response directly in {req.language}. Do not use English unless the requested language is English. "
-        f"Demystify and simplify the insurance policy clause or claim document in {req.language}. "
-        f"All monetary calculations must be expressed in Indian Rupees (₹ / INR). "
-        f"1. Explain what the clause means in plain, jargon-free language. "
-        f"2. Explicitly explain financial liabilities (out-of-pocket costs, room rent cap proportionate deductions on ₹ amounts, copay percentages). "
-        f"3. Provide a step-by-step TPA pre-authorization / claim filing checklist to prevent claim rejections."
+    detected_labels = ", ".join(clause.replace("_", " ") for clause in detected_clauses) or "no known clause type"
+    summary_text = (
+        f"🛡️ **Insurance Clause Review ({req.language}):**\n\n"
+        f"Rule checks detected: **{detected_labels}**.\n\n"
+        f"• **Room rent:** Compare the eligible room category and daily cap with the room selected. Some policies apply proportionate deductions; check the exact policy wording and insurer calculation.\n"
+        f"• **Co-payment:** If your policy includes a co-pay, confirm the percentage and which eligible expenses it applies to before estimating your share.\n"
+        f"• **Waiting periods and exclusions:** Confirm condition-specific waiting periods, pre-existing disease terms, and listed exclusions in your policy schedule.\n\n"
+        f"📋 **Before admission or claim:**\n"
+        f"1. Ask the insurer/TPA for written pre-authorization requirements and network status.\n"
+        f"2. Keep the itemized bill, discharge summary, prescriptions, reports, and payment receipts.\n"
+        f"3. Request a written reason and calculation for any deduction or denial.\n\n"
+        f"This rule-based checklist does not determine coverage. The insurer's policy wording and written decision control."
     )
-
-    user_prompt = f"""
-INSURANCE CLAUSE / CLAIM QUERY:
-{req.input_text}
-
-Explain this clearly in plain {req.language} with financial impact analysis (in ₹ / INR) and claim filing advice.
-FINAL INSTRUCTION: Your ENTIRE response MUST be in {req.language}. Do not output any English text unless the requested language is English.
-"""
-
-    ai_response = call_ollama(DEFAULT_MODEL, user_prompt, system_prompt)
-
-    if not ai_response:
-        ai_response = (
-            f"🛡️ **Insurance Policy & Claim Term Breakdown ({req.language}):**\n\n"
-            f"• **Clause Explanation:** Complex insurance jargon simplified into plain language.\n"
-            f"• **Room Rent Cap Warning (Proportionate Deductions):** If your policy caps room rent at 1% of Sum Insured (e.g. ₹5,000/day on a ₹5 Lakh policy) and you choose a room costing ₹10,000/day, "
-            f"the insurer will apply a **50% Proportionate Deduction** across your entire hospital bill (including doctor fees, anesthesia, and OT charges), leaving you with large out-of-pocket expenses.\n"
-            f"• **Copayment & Deductibles:** Verify your percentage share before admission.\n"
-            f"• **Pre-Existing Disease (PED) Waiting Period:** Treatments related to pre-existing conditions are covered only after fulfilling the mandated waiting period.\n\n"
-            f"📋 **Checklist for Smooth Claim Settlement:**\n"
-            f"1. Notify the hospital TPA desk at least 48-72 hours in advance for planned hospitalizations (or within 24 hours for emergencies).\n"
-            f"2. Collect Discharge Summary, detailed itemized pharmacy bills, diagnostic reports, and payment receipts.\n"
-            f"3. Ensure the treating doctor mentions exact symptom onset dates to avoid non-disclosure queries."
-        )
 
     structured_data = {
         "detected_clause_types": detected_clauses,
@@ -559,7 +488,7 @@ FINAL INSTRUCTION: Your ENTIRE response MUST be in {req.language}. Do not output
         ]
     }
 
-    return structured_data, ai_response, []
+    return structured_data, summary_text, []
 
 def process_pocket_doctor(req: MedicalRequest) -> tuple[Dict[str, Any], str, List[str]]:
     """4. Pocket Doctor: Safe preliminary health guidance, triage levels & red-flag detection."""
@@ -572,63 +501,34 @@ def process_pocket_doctor(req: MedicalRequest) -> tuple[Dict[str, Any], str, Lis
         "anaphylaxis", "suicidal thoughts", "sudden vision loss", "stiff neck with high fever"
     ]
 
-    detected_red_flags = [rf for rf in red_flags if rf in text_lower]
+    detected_red_flags = [rf for rf in red_flags if symptom_present(text_lower, rf)]
 
     triage_level = "ROUTINE"
     if detected_red_flags:
         triage_level = "EMERGENCY"
-    elif any(s in text_lower for s in ["high fever", "persistent vomiting", "dehydration", "severe abdominal pain", "blood in stool", "fainting"]):
+    elif any(symptom_present(text_lower, s) for s in ["high fever", "persistent vomiting", "dehydration", "severe abdominal pain", "blood in stool", "fainting"]):
         triage_level = "URGENT"
-    elif any(s in text_lower for s in ["mild fever", "cough", "runny nose", "sore throat", "headache", "gas", "indigestion"]):
+    elif any(symptom_present(text_lower, s) for s in ["mild fever", "cough", "runny nose", "sore throat", "headache", "gas", "indigestion"]):
         triage_level = "SELF_CARE"
 
-    matched_drugs, matched_names = retrieve_drug_facts(req.input_text)
+    matched_drugs, matched_names = lookup_drug_profiles(req.input_text)
 
-    system_prompt = (
-        f"You are VoiceMed Open's Pocket Doctor, an empathetic and strictly ethical medical triage assistant. "
-        f"IMPORTANT: You MUST translate and output your ENTIRE response directly in {req.language}. Do not use English unless the requested language is English. "
-        f"Provide preliminary guidance in {req.language}. "
-        f"CRITICAL SAFETY PROTOCOLS: "
-        f"1. You are an AI assistant, NOT a substitute for professional clinical diagnosis. "
-        f"2. Assess the urgency level ({triage_level}). If RED FLAGS are present, immediately urge seeking emergency medical care (Call 108 / 112 / 911). "
-        f"3. Suggest safe, conservative home-care measures (hydration, rest) and list specific questions the patient should ask their doctor. "
-        f"4. Never prescribe prescription-only medications or deliver definitive diagnoses."
-    )
-
-    user_prompt = f"""
-PATIENT SYMPTOM DESCRIPTION:
-{req.input_text}
-
-ASSESSED TRIAGE LEVEL: {triage_level}
-DETECTED RED-FLAG WARNINGS: {', '.join(detected_red_flags) if detected_red_flags else 'None detected'}
-
-Provide clear, supportive, and safety-conscious health guidance in {req.language}.
-FINAL INSTRUCTION: Your ENTIRE response MUST be in {req.language}. Do not output any English text unless the requested language is English.
-"""
-
-    ai_response = call_ollama(DEFAULT_MODEL, user_prompt, system_prompt)
-
-    if not ai_response:
-        if triage_level == "EMERGENCY":
-            ai_response = (
-                f"🚨 **EMERGENCY MEDICAL WARNING ({req.language})**\n\n"
-                f"Your symptoms may indicate a serious or time-sensitive medical condition ({', '.join(detected_red_flags)}).\n\n"
-                f"⚠️ **IMMEDIATE ACTION REQUIRED:**\n"
-                f"• Call emergency ambulance services immediately (e.g. 108 / 112 / 911) or proceed to the nearest emergency department.\n"
-                f"• Do not drive yourself; have a companion or ambulance transport you.\n"
-                f"• Avoid strenuous physical activity and remain calm while assistance is en route."
-            )
-        else:
-            ai_response = (
-                f"🩺 **Pocket Doctor Guidance ({req.language})**\n\n"
-                f"**Assessed Urgency Level:** `{triage_level}`\n\n"
-                f"• **Home Comfort & Supportive Care:** Ensure adequate hydration (water, ORS / electrolyte fluids), prioritize rest, and monitor your symptoms closely.\n"
-                f"• **When to Seek Immediate Medical Attention:** If you develop severe shortness of breath, sudden high fever (>103°F/39.4°C), chest pressure, or inability to retain fluids.\n"
-                f"• **Questions for Your Doctor:**\n"
-                f"  1. What is the most likely cause of my symptoms?\n"
-                f"  2. Are any diagnostic tests required?\n"
-                f"  3. Are there specific red-flag symptoms that should prompt an immediate hospital visit?"
-            )
+    if triage_level == "EMERGENCY":
+        summary_text = (
+            f"🚨 **Emergency warning ({req.language})**\n\n"
+            f"Reported symptoms match emergency warning terms: {', '.join(detected_red_flags)}.\n\n"
+            f"**Seek emergency medical care now.** Call 108 / 112 in India (or your local emergency number). "
+            f"Do not drive yourself; ask someone nearby to help or call an ambulance."
+        )
+    else:
+        summary_text = (
+            f"🩺 **Symptom guidance ({req.language})**\n\n"
+            f"**Rule-based urgency:** `{triage_level}`\n\n"
+            f"This tool cannot diagnose the cause. Rest, drink fluids as tolerated, and monitor how symptoms change. "
+            f"Contact a qualified clinician if symptoms persist, worsen, or concern you. Seek urgent care for severe breathing difficulty, "
+            f"chest pressure, confusion, fainting, severe pain, or inability to keep fluids down.\n\n"
+            f"**For a clinician:** note when symptoms began, how they have changed, temperature if measured, current medicines, and allergies."
+        )
 
     structured_data = {
         "triage_level": triage_level,
@@ -642,20 +542,20 @@ FINAL INSTRUCTION: Your ENTIRE response MUST be in {req.language}. Do not output
         )
     }
 
-    return structured_data, ai_response, matched_names
+    return structured_data, summary_text, matched_names
 
 # ---------------------------------------------------------------------------
 # API Endpoints
 # ---------------------------------------------------------------------------
 
-@app.get("/", summary="VoiceMed Open Frontend Dashboard")
+@app.get("/", summary="VoiceMed Frontend Dashboard")
 def root():
     index_path = os.path.join(BASE_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path, media_type="text/html")
     return get_api_metadata()
 
-@app.get("/dashboard", summary="VoiceMed Open Web Dashboard")
+@app.get("/dashboard", summary="VoiceMed Web Dashboard")
 def dashboard():
     index_path = os.path.join(BASE_DIR, "index.html")
     if os.path.exists(index_path):
@@ -666,12 +566,12 @@ def dashboard():
 @app.get("/api/info", summary="API Metadata")
 def get_api_metadata():
     return {
-        "name": "VoiceMed Open",
+        "name": "VoiceMed",
         "version": "2.1.0",
         "status": "Online",
         "license": "MIT",
         "currency_locale": "INR (₹)",
-        "description": "Open-Source Multilingual Healthcare AI Assistant with INR Bill Auditing & Resilient TTS Fallback",
+        "description": "Community-developed clinical paperwork explainer using deterministic local rules, INR bill categorization, and optional speech output",
         "supported_features": [
             "prescription",
             "bill_analysis",
@@ -683,14 +583,16 @@ def get_api_metadata():
             "fallback_engine": "Browser Native SpeechSynthesis (window.speechSynthesis)",
             "supported_spoken_languages": ["Telugu", "Hindi", "English", "Spanish", "Tamil", "Bengali", "Marathi"]
         },
+        "local_rule_engine": {
+            "drug_profiles": len(drugs_db),
+            "status": "Operational" if len(drugs_db) > 0 else "Empty",
+            "generative_model_used": False
+        },
+        "models": {"analysis": "deterministic_local_rules"},
         "rag_knowledge_base": {
             "loaded_drugs_count": len(drugs_db),
-            "status": "Operational" if len(drugs_db) > 0 else "Empty"
-        },
-        "models": {
-            "default_model": DEFAULT_MODEL,
-            "fast_parser": FAST_PARSER_MODEL,
-            "ollama_base_url": OLLAMA_BASE_URL
+            "status": "retired",
+            "deprecated": True
         },
         "endpoints": {
             "frontend_dashboard": "/",
@@ -721,7 +623,7 @@ def get_features():
         "features": {
             "prescription": {
                 "title": "Prescription Decoding & Drug Safety",
-                "description": "Decodes medical shorthand, checks dosages against clinical thresholds, explains food instructions, and matches against local zero-hallucination drug knowledge base.",
+                "description": "Decodes known shorthand, applies explicit safety checks, and looks up reviewed profiles from the local formulary. No generative model is used.",
                 "sample_input": "Rx: Tab Augmentin 625mg 1-0-1 PC x 5 days, Tab Dolo 650mg TDS SOS."
             },
             "bill_analysis": {
@@ -742,7 +644,7 @@ def get_features():
         }
     }
 
-@app.get("/api/drugs", summary="Query Drugs Knowledge Base")
+@app.get("/api/drugs", summary="Query Local Drug Formulary")
 def get_drugs(
     q: Optional[str] = Query(None, description="Search term for drug name, brand, or purpose"),
     category: Optional[str] = Query(None, description="Filter by drug category")
@@ -802,18 +704,22 @@ def process_medical(req: MedicalRequest):
     """
     start_time = time.time()
 
-    if req.feature == "prescription":
-        structured_data, summary_text, rag_matches = process_prescription(req)
-    elif req.feature == "bill_analysis":
-        structured_data, summary_text, rag_matches = process_bill_analysis(req)
-    elif req.feature == "insurance":
-        structured_data, summary_text, rag_matches = process_insurance(req)
-    elif req.feature == "pocket_doctor":
-        structured_data, summary_text, rag_matches = process_pocket_doctor(req)
+    effective_feature = req.resolved_feature
+    if effective_feature is None:
+        raise HTTPException(status_code=400, detail="Feature is required.")
+
+    if effective_feature == "prescription":
+        structured_data, summary_text, matched_profiles = process_prescription(req)
+    elif effective_feature == "bill_analysis":
+        structured_data, summary_text, matched_profiles = process_bill_analysis(req)
+    elif effective_feature == "insurance":
+        structured_data, summary_text, matched_profiles = process_insurance(req)
+    elif effective_feature == "pocket_doctor":
+        structured_data, summary_text, matched_profiles = process_pocket_doctor(req)
     else:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported feature '{req.feature}'. Supported: 'prescription', 'bill_analysis', 'insurance', 'pocket_doctor'."
+            detail=f"Unsupported feature '{effective_feature}'. Supported: 'prescription', 'bill_analysis', 'insurance', 'pocket_doctor'."
         )
 
     exec_time = round((time.time() - start_time) * 1000, 2)
@@ -821,26 +727,29 @@ def process_medical(req: MedicalRequest):
     # Generate speech synthesis configuration / audio stream for instant voice playback
     audio_guidance = generate_multilingual_audio(
         text=summary_text,
-        language=req.language or "English"
+        language="English",
+        allow_external=False
     )
 
     disclaimer = (
-        "Medical Disclaimer: VoiceMed Open is an open-source educational and clinical decision-support tool. "
+        "Medical Disclaimer: VoiceMed is an educational and clinical decision-support tool. "
         "It is not a substitute for professional medical advice, diagnosis, or treatment. "
         "Always consult a qualified healthcare provider for clinical decisions."
     )
 
     return MedicalResponse(
-        feature=req.feature,
+        feature=effective_feature,
         language=req.language or "English",
+        summary_language="English",
         currency="INR (₹)",
         structured_data=structured_data,
         summary_text=summary_text,
         audio_guidance=audio_guidance,
         clinical_disclaimer=disclaimer,
         execution_time_ms=exec_time,
-        model_used=DEFAULT_MODEL,
-        rag_matches=rag_matches
+        model_used="deterministic_local_rules",
+        matched_profiles=matched_profiles,
+        rag_matches=matched_profiles
     )
 
 # ---------------------------------------------------------------------------
@@ -871,25 +780,27 @@ async def websocket_medical_endpoint(websocket: WebSocket):
             )
 
             if req.feature == "prescription":
-                structured_data, summary_text, rag_matches = process_prescription(req)
+                structured_data, summary_text, matched_profiles = process_prescription(req)
             elif req.feature == "bill_analysis":
-                structured_data, summary_text, rag_matches = process_bill_analysis(req)
+                structured_data, summary_text, matched_profiles = process_bill_analysis(req)
             elif req.feature == "insurance":
-                structured_data, summary_text, rag_matches = process_insurance(req)
+                structured_data, summary_text, matched_profiles = process_insurance(req)
             else:
-                structured_data, summary_text, rag_matches = process_pocket_doctor(req)
+                structured_data, summary_text, matched_profiles = process_pocket_doctor(req)
 
-            audio_guidance = generate_multilingual_audio(summary_text, req.language)
+            audio_guidance = generate_multilingual_audio(summary_text, "English", allow_external=False)
 
             resp_payload = {
                 "feature": req.feature,
                 "language": req.language,
+                "summary_language": "English",
                 "currency": "INR (₹)",
                 "summary": summary_text,
                 "structured_data": structured_data,
                 "audio_guidance": audio_guidance.dict(),
-                "rag_matches": rag_matches,
-                "disclaimer": "VoiceMed Open Decision Support - Consult your doctor."
+                "matched_profiles": matched_profiles,
+                "rag_matches": matched_profiles,
+                "disclaimer": "VoiceMed decision support - Consult your doctor."
             }
 
             await websocket.send_text(json.dumps(resp_payload))

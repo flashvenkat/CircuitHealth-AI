@@ -3,7 +3,7 @@ html = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceMed Open \u2014 Intelligent Medical Decision Support</title>
+    <title>VoiceMed \u2014 Intelligent Medical Decision Support</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@ html = """<!DOCTYPE html>
         <div class="max-w-md w-full glass-card p-8 rounded-3xl glow-teal">
             <div class="text-center mb-8">
                 <div class="inline-flex bg-teal-500 text-black p-3 rounded-2xl font-bold text-2xl mb-3 shadow-lg shadow-teal-500/20">\U0001f3e5</div>
-                <h2 class="text-2xl font-bold text-white tracking-tight">Welcome to VoiceMed Open</h2>
+                <h2 class="text-2xl font-bold text-white tracking-tight">Welcome to VoiceMed</h2>
                 <p class="text-sm text-slate-400 mt-1">Secure, offline-first multilingual clinical companion</p>
             </div>
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
@@ -62,7 +62,7 @@ html = """<!DOCTYPE html>
                 <div class="flex items-center gap-3">
                     <div class="bg-teal-500 text-black p-2 rounded-xl font-bold text-lg">\U0001f3e5</div>
                     <div>
-                        <h1 class="font-bold text-white flex items-center gap-2 text-sm">VoiceMed Open <span class="text-[10px] bg-teal-950 text-teal-300 px-2 py-0.5 rounded-full border border-teal-800/60">v2.1 PRO</span></h1>
+                        <h1 class="font-bold text-white flex items-center gap-2 text-sm">VoiceMed <span class="text-[10px] bg-teal-950 text-teal-300 px-2 py-0.5 rounded-full border border-teal-800/60">v2.1 PRO</span></h1>
                         <p class="text-xs text-slate-400">Logged in as <span id="profileNameDisplay" class="text-teal-400 font-semibold"></span> &middot; <span id="profileAgeDisplay"></span> yrs</p>
                     </div>
                 </div>
