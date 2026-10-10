@@ -1072,7 +1072,93 @@
             body.clinical-app::before { transition:none; }
             html.motion-enhanced .motion-reveal { opacity:1; filter:none; transform:none; clip-path:none; transition:none; }
         }
-    </style>
+    
+/* ===== vm-flagship : canvas hero field, avatar menu, magnetic ===== */
+.hero-art,.command-hero{position:relative;isolation:isolate;}
+.vm-hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:.95;transform:translateZ(0);}
+.vm-profile{position:relative;display:flex;align-items:center;margin-left:.4rem;}
+.vm-avatar-btn{position:relative;display:grid;place-items:center;width:38px;height:38px;border-radius:999px;font:600 13px/1 var(--body-font);letter-spacing:.02em;color:#fff;background:linear-gradient(135deg,var(--teal) 0%,var(--motion-primary,#6c5cff) 100%);border:1px solid rgba(255,255,255,.28);box-shadow:0 0 0 3px rgba(20,184,166,.16),0 6px 18px rgba(8,126,128,.3);cursor:pointer;transition:transform .45s cubic-bezier(.6,.05,.01,.9),box-shadow .45s cubic-bezier(.6,.05,.01,.9);transform:translateZ(0);}
+.vm-avatar-btn:hover{box-shadow:0 0 0 4px rgba(99,211,194,.24),0 10px 26px rgba(8,126,128,.36);}
+.vm-avatar-btn:focus-visible{outline:2px solid var(--motion-accent,#00e5ff);outline-offset:3px;}
+.vm-avatar-btn::after{content:"";position:absolute;inset:-1px;border-radius:999px;border:1px solid rgba(99,211,194,.5);animation:vm-ring 3.6s ease-in-out infinite;pointer-events:none;}
+@keyframes vm-ring{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.16);opacity:0}}
+.vm-profile-panel{position:absolute;top:calc(100% + 12px);right:0;width:min(352px,88vw);max-height:min(78vh,640px);overflow:auto;padding:14px;border-radius:18px;background:color-mix(in srgb,var(--panel) 78%,transparent);backdrop-filter:blur(16px) saturate(1.25);-webkit-backdrop-filter:blur(16px) saturate(1.25);box-shadow:0 24px 64px rgba(6,40,44,.3);color:var(--text);opacity:0;visibility:hidden;transform:translateY(-10px) scale(.97);transform-origin:top right;transition:opacity .34s cubic-bezier(.6,.05,.01,.9),transform .34s cubic-bezier(.6,.05,.01,.9),visibility .34s;z-index:80;}
+.vm-profile-panel::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(20,184,166,.6),rgba(108,92,255,.4) 45%,rgba(255,255,255,.06) 80%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none;}
+.vm-profile.open .vm-profile-panel{opacity:1;visibility:visible;transform:translateY(0) scale(1);}
+.vm-pf-head{display:flex;align-items:center;gap:10px;padding:4px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:12px;}
+.vm-pf-avatar{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;font:600 15px/1 var(--body-font);color:#fff;background:linear-gradient(135deg,var(--teal),var(--motion-primary,#6c5cff));flex:none;}
+.vm-pf-name{font-weight:600;font-size:.95rem;line-height:1.2;}
+.vm-pf-mail{font-size:.74rem;color:var(--muted);}
+.vm-pf-status{display:inline-flex;align-items:center;gap:5px;margin-top:3px;font-size:.68rem;color:var(--muted);}
+.vm-pf-dot{width:7px;height:7px;border-radius:999px;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.7);}
+.vm-profile-panel[data-online="false"] .vm-pf-dot{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.7);}
+.vm-pf-label{font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:10px 4px 4px;display:block;}
+.vm-pf-field{width:100%;padding:.5rem .65rem;border-radius:11px;border:1px solid var(--line);background:var(--panel-soft);color:var(--text);font:400 .84rem/1.3 var(--body-font);transition:border-color .3s cubic-bezier(.6,.05,.01,.9),box-shadow .3s cubic-bezier(.6,.05,.01,.9);}
+.vm-pf-field:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(20,184,166,.18);}
+textarea.vm-pf-field{min-height:64px;resize:vertical;}
+.vm-pf-row{display:flex;gap:8px;margin-top:8px;}
+.vm-pf-row>*{flex:1;min-width:0;}
+.vm-pf-actions{display:grid;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);}
+.vm-pf-btn{display:flex;align-items:center;gap:8px;width:100%;padding:.52rem .7rem;border-radius:11px;border:1px solid var(--line);background:var(--panel-soft);color:var(--text);font:500 .82rem/1.2 var(--body-font);cursor:pointer;transition:transform .35s cubic-bezier(.6,.05,.01,.9),background .35s cubic-bezier(.6,.05,.01,.9),border-color .35s cubic-bezier(.6,.05,.01,.9);}
+.vm-pf-btn:hover{transform:translateX(3px);border-color:var(--teal);}
+.vm-pf-btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+.vm-pf-btn.danger{color:#b73b4f;border-color:rgba(183,59,79,.35);}
+.vm-pf-btn.danger:hover{background:rgba(183,59,79,.08);border-color:#b73b4f;}
+.vm-pf-saved{margin-top:6px;font-size:.78rem;color:var(--muted);min-height:1em;}
+@media (prefers-reduced-motion:reduce){
+.vm-hero-canvas{display:none!important;}
+.vm-avatar-btn::after{display:none;}
+.vm-profile-panel,.vm-avatar-btn,.vm-pf-btn,.vm-pf-field{transition:none!important;}
+}
+
+
+/* ===== vm-fix : no white flash while switching modules ===== */
+.analysis-input,.analysis-output,.secondary-panel{background-clip:padding-box;backface-visibility:hidden;}
+.analysis-input,.analysis-output{will-change:opacity,transform;}
+
+
+/* ===== vm-luxe : Clinical Luxe 2.0 ===== */
+body[data-theme="dark"]{--bg:#050508;--panel:#0A0F1D;--panel-strong:#0E1524;--panel-soft:#0B1120;--line:rgba(150,185,255,.10);--text:#F5F7FA;--muted:#93A0B8;--teal:#12A8A6;--teal-strong:#0A8E8C;--shadow:0 26px 60px rgba(0,0,0,.55);}
+.vm-glass{backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);}
+.vm-card{box-shadow:inset 0 0 0 1px rgba(150,185,255,.12),0 20px 52px rgba(0,0,0,.42);transition:box-shadow .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1);transform:translateZ(0);}
+body[data-theme="dark"] .vm-card{box-shadow:inset 0 0 0 1px rgba(150,185,255,.10),0 24px 60px rgba(0,0,0,.55);}
+.vm-card:hover{box-shadow:inset 0 0 0 1px rgba(99,211,194,.30),0 30px 72px rgba(0,0,0,.5),0 0 36px rgba(8,126,128,.22);}
+.vm-shimmer{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:2;mix-blend-mode:screen;transition:opacity .45s cubic-bezier(.16,1,.3,1);background:radial-gradient(380px circle at var(--vmx,50%) var(--vmy,50%),rgba(99,211,194,.16),rgba(255,255,255,.10) 30%,transparent 62%);}
+.vm-card.vm-live .vm-shimmer{opacity:1;}
+.vm-tilt{transform-style:preserve-3d;}
+.primary-action{box-shadow:0 12px 32px rgba(8,126,128,.34),0 0 0 1px rgba(99,211,194,.20) inset;}
+.primary-action:hover{box-shadow:0 16px 46px rgba(8,126,128,.48),0 0 28px rgba(99,211,194,.30);}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #63D3C2;outline-offset:2px;border-radius:8px;}
+#moduleHeaderTitle{font-size:clamp(1.05rem,1.5vw,1.4rem)!important;letter-spacing:-.02em;}
+.command-hero h2{font-size:clamp(1.45rem,3vw,2.35rem);letter-spacing:-.03em;}
+#authView h1{font-size:clamp(1.6rem,3.2vw,2.5rem);letter-spacing:-.03em;}
+body[data-theme="dark"] #moduleHeaderTitle,body[data-theme="dark"] .command-hero h2{text-shadow:0 0 34px rgba(20,184,166,.26);}
+@media (prefers-reduced-motion:reduce){
+ .vm-card,.vm-shimmer,.primary-action{transition:none!important;}
+ .vm-shimmer{display:none;}
+}
+@media (hover:none){.vm-shimmer{display:none;} .vm-tilt{transform:none!important;}}
+/* ===== vm-auth : immersive landing ===== */
+#authView{position:relative;overflow:hidden;background:radial-gradient(1200px 700px at 78% 6%,rgba(20,184,166,.10),transparent 60%),radial-gradient(900px 620px at 6% 94%,rgba(108,92,255,.10),transparent 60%),var(--bg);}
+.vm-spot{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .8s cubic-bezier(.16,1,.3,1);background:radial-gradient(560px circle at var(--sx,72%) var(--sy,28%),rgba(99,211,194,.20),rgba(8,126,128,.10) 34%,transparent 62%);}
+#authView.vm-spot-on .vm-spot{opacity:1;}
+#authView > section{position:relative;z-index:1;}
+.auth-card,.profile-card{position:relative;border:1px solid transparent;border-radius:22px;backdrop-filter:blur(32px) saturate(1.8);-webkit-backdrop-filter:blur(32px) saturate(1.8);}
+body[data-theme="dark"] .auth-card,body[data-theme="dark"] .profile-card{background:color-mix(in srgb,var(--panel) 82%,transparent);box-shadow:0 44px 96px rgba(0,0,0,.62),0 0 0 1px rgba(150,185,255,.06);}
+.vm-ring{position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:3;opacity:.7;background-size:220% 220%;background-position:0% 0%;background-image:linear-gradient(135deg,rgba(20,184,166,.65),rgba(108,92,255,.42) 45%,rgba(255,255,255,.06));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;transition:background-position 1s cubic-bezier(.16,1,.3,1),opacity .6s cubic-bezier(.16,1,.3,1);}
+.auth-card:hover .vm-ring,.profile-card:hover .vm-ring{background-position:100% 100%;opacity:1;}
+[data-i18n="landingTitle"]{letter-spacing:-.035em;line-height:1.05;background-image:linear-gradient(96deg,#0A8E8C,#12A8A6 30%,#2FB9A6 58%,#5B6BE0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 6px 26px rgba(20,184,166,.26));}
+body[data-theme="dark"] [data-i18n="landingTitle"]{background-image:linear-gradient(96deg,#63D3C2,#12A8A6 28%,#7C6CFF 74%,#63D3C2 100%);filter:drop-shadow(0 8px 34px rgba(20,184,166,.38));}
+.vm-float{position:relative;}
+.vm-float > input ~ label{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:.78rem;color:var(--muted);pointer-events:none;margin:0;transition:all .32s cubic-bezier(.16,1,.3,1);}
+.vm-float > input{padding-top:1.35rem!important;padding-bottom:.55rem!important;}
+.vm-float > input:focus ~ label,.vm-float > input:not(:placeholder-shown) ~ label{top:9px;transform:none;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);}
+.vm-float > input::placeholder{color:transparent;}
+.vm-float > input:focus::placeholder{color:color-mix(in srgb,var(--muted) 50%,transparent);}
+@media (prefers-reduced-motion:reduce){.vm-spot{display:none}.vm-ring{transition:none}}
+@media (hover:none){.vm-spot{display:none}}
+</style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230b8887'/%3E%3Cpath d='M7 16h4l2-5 3 10 3-7 2 2h4' stroke='%23ffffff' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
 <body class="clinical-app min-h-screen flex flex-col" data-theme="dark">
 
@@ -1327,9 +1413,7 @@
                     </div>
                     <p id="moduleHeaderDesc" class="text-xs text-slate-400 mb-3">Scan a prescription or hospital bill, upload a file, or use text instead.</p>
                     <div class="flex gap-2 mb-3">
-                        <button id="prescriptionModeBtn" onclick="openWorkspace('prescription')" class="primary-action rounded-lg px-3 py-2 text-[10px] font-bold">💊 &nbsp; <span data-i18n="prescriptionMode">Prescription</span></button>
-                        <button id="billModeBtn" onclick="openWorkspace('bill_analysis')" class="rounded-lg px-3 py-2 text-[10px] font-semibold border border-slate-300 bg-white hover:bg-slate-50">▤ &nbsp; <span data-i18n="billMode">Hospital bill</span></button>
-                        <button onclick="loadSampleData()" class="ml-auto text-[10px] text-teal-700 border border-emerald-100 bg-emerald-50 px-3 py-2 rounded-lg" data-i18n="loadSample">Load sample</button>
+                        <button onclick="loadSampleData()" class="text-[10px] text-teal-700 border border-emerald-100 bg-emerald-50 px-3 py-2 rounded-lg" data-i18n="loadSample">Load sample</button>
                     </div>
                     <div id="uploadZone" class="drop-zone rounded-xl p-4 mb-4 text-center">
                         <input id="documentFile" class="hidden" type="file" accept=".pdf,image/*,.txt">
@@ -1973,11 +2057,9 @@
         try {
             const savedLanguage = localStorage.getItem('voicemed.language');
             if (savedLanguage) setLanguage(savedLanguage, false);
-            const rememberedEmail = localStorage.getItem('voicemed.rememberedEmail');
-            if (rememberedEmail) {
-                document.getElementById('authEmail').value = rememberedEmail;
-                document.getElementById('rememberDevice').checked = true;
-            }
+            /* vm-fix: auth fields start pristine; never pre-fill a cached address */
+        document.getElementById('authEmail').value = '';
+        document.getElementById('rememberDevice').checked = false;
         } catch (error) {
             document.getElementById('authMessage').innerText = t('rememberEmailFailure');
         }
@@ -2159,8 +2241,7 @@
         function showAuthStep() {
             document.getElementById('profileStep').classList.add('hidden');
             document.getElementById('authStep').classList.remove('hidden');
-            document.getElementById('authStep').classList.remove('screen-enter');
-            requestAnimationFrame(() => document.getElementById('authStep').classList.add('screen-enter'));
+            const _vmEl = document.getElementById('authStep'); _vmEl.classList.remove('screen-enter'); void _vmEl.offsetWidth; _vmEl.classList.add('screen-enter');
         }
 
         function beginProfileSetup() {
@@ -2171,8 +2252,7 @@
             currentUser.email = email;
             document.getElementById('profileStep').classList.remove('hidden');
             document.getElementById('authStep').classList.add('hidden');
-            document.getElementById('profileStep').classList.remove('screen-enter');
-            requestAnimationFrame(() => document.getElementById('profileStep').classList.add('screen-enter'));
+            const _vmEl = document.getElementById('profileStep'); _vmEl.classList.remove('screen-enter'); void _vmEl.offsetWidth; _vmEl.classList.add('screen-enter');
             document.getElementById('profileFullName').focus();
         }
 
@@ -2267,8 +2347,10 @@
             document.querySelectorAll('.analysis-input, .analysis-output').forEach(panel => panel.classList.add('hidden'));
             document.getElementById('secondaryPanel').classList.add('hidden');
             document.querySelectorAll('.command-hero, .tool-grid, .clinical-activity').forEach(panel => {
-                panel.classList.remove('hidden', 'screen-enter');
-                requestAnimationFrame(() => panel.classList.add('screen-enter'));
+                panel.classList.remove('screen-enter');
+        void panel.offsetWidth;
+        panel.classList.remove('hidden');
+        panel.classList.add('screen-enter');
             });
             setActiveWorkspaceNav('Command center');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2281,8 +2363,10 @@
             document.getElementById('secondaryPanel').classList.add('hidden');
             ['analysisInputPanel', 'analysisOutputPanel'].forEach(id => {
                 const panel = document.getElementById(id);
-                panel.classList.remove('hidden', 'screen-enter');
-                requestAnimationFrame(() => panel.classList.add('screen-enter'));
+                panel.classList.remove('screen-enter');
+        void panel.offsetWidth;
+        panel.classList.remove('hidden');
+        panel.classList.add('screen-enter');
             });
             setActiveWorkspaceNav('');
             document.getElementById('analysisInputPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2292,8 +2376,10 @@
             document.querySelectorAll('.command-hero, .tool-grid, .clinical-activity, .analysis-input, .analysis-output').forEach(panel => panel.classList.add('hidden'));
             const panel = document.getElementById('secondaryPanel');
             panel.innerHTML = `<h2 class="text-2xl font-semibold text-slate-800">${escapeHtml(title)}</h2><div class="mt-5">${body}</div>`;
-            panel.classList.remove('hidden', 'screen-enter');
-            requestAnimationFrame(() => panel.classList.add('screen-enter'));
+            panel.classList.remove('screen-enter');
+        void panel.offsetWidth;
+        panel.classList.remove('hidden');
+        panel.classList.add('screen-enter');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -2448,13 +2534,9 @@
             };
             document.getElementById('moduleHeaderTitle').innerText = t(meta[mod][0]);
             document.getElementById('moduleHeaderDesc').innerText  = t(meta[mod][1]);
-            document.getElementById('prescriptionModeBtn').className = mod === 'prescription'
-                ? 'primary-action rounded-lg px-3 py-2 text-[10px] font-bold'
-                : 'rounded-lg px-3 py-2 text-[10px] font-semibold border border-slate-300 bg-white hover:bg-slate-50';
-            document.getElementById('billModeBtn').className = mod === 'bill_analysis'
-                ? 'primary-action rounded-lg px-3 py-2 text-[10px] font-bold'
-                : 'rounded-lg px-3 py-2 text-[10px] font-semibold border border-slate-300 bg-white hover:bg-slate-50';
-        }
+            if (typeof vmApplyModuleChrome === 'function') vmApplyModuleChrome(mod);
+}
+
 
         function loadSampleData() {
             const n = currentUser.name || 'Patient';
@@ -2726,5 +2808,399 @@
 
         initializeMotionDesign();
     </script>
-</body>
+<script>
+/* ===== vm-flagship : canvas hero field, avatar menu, magnetic ===== */
+(function(){
+  'use strict';
+  if(window.__vmFlagship) return; window.__vmFlagship = true;
+  var REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var FINE = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+  var STORE = 'voicemed.clinicalProfile.v1';
+  function L(fallback, key){ try{ var v = t(key); return (v && v !== key) ? v : fallback; }catch(e){ return fallback; } }
+
+  /* ---------------- Canvas 2D hero particle field ---------------- */
+  var fields = [];
+  function mountField(host){
+    if(!host || host.querySelector('.vm-hero-canvas')) return;
+    var canvas = document.createElement('canvas');
+    canvas.className = 'vm-hero-canvas';
+    canvas.setAttribute('aria-hidden','true');
+    host.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+    if(!ctx) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var COUNT = FINE ? 230 : 110;
+    var FOV = 2.7, LIFT = 0.9;
+    var pts = [];
+    for(var i=0;i<COUNT;i++){
+      var y = 1 - (i/(COUNT-1))*2;
+      var rad = Math.sqrt(Math.max(0, 1 - y*y));
+      var th = i * 2.399963229728653;
+      pts.push({ x: Math.cos(th)*rad, y: y, z: Math.sin(th)*rad });
+    }
+    var w=0, h=0, mx=0, my=0, tmx=0, tmy=0, rot=0, scrollRot=0, raf=0, last=0, visible=true;
+
+    function resize(){
+      var r = host.getBoundingClientRect();
+      w = Math.max(1, r.width); h = Math.max(1, r.height);
+      canvas.width = Math.floor(w*dpr); canvas.height = Math.floor(h*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    resize();
+    if(window.ResizeObserver){ var ro = new ResizeObserver(resize); ro.observe(host); }
+
+    function paint(){
+      ctx.clearRect(0,0,w,h);
+      var cx = w/2, cy = h/2, s = Math.min(w,h)*0.37;
+      var ca = Math.cos(rot), sa = Math.sin(rot);
+      var cb = Math.cos(tmy), sb = Math.sin(tmy);
+      var out = [];
+      for(var i=0;i<pts.length;i++){
+        var p = pts[i];
+        var x1 = p.x*ca - p.z*sa, z1 = p.x*sa + p.z*ca;
+        var y2 = p.y*cb - z1*sb, z2 = p.y*sb + z1*cb;
+        var ripple = Math.sin(rot*2.2 + y2*3.0 + scrollRot*0.02)*0.055; var persp = FOV/(FOV + z2 + ripple);
+        out.push({ x: cx + (x1 + tmx*LIFT)*s*persp, y: cy + y2*s*persp, p: persp });
+      }
+      ctx.lineWidth = 1;
+      for(var j=0;j<out.length;j++){
+        var a = out[j];
+        for(var k=j+1;k<Math.min(j+3, out.length);k++){
+          var b = out[k];
+          var dx = a.x-b.x, dy = a.y-b.y, d2 = dx*dx+dy*dy;
+          if(d2 < 5200){
+            var al = (1 - d2/5200) * 0.26 * Math.min(a.p, b.p);
+            ctx.strokeStyle = 'rgba(20,184,166,' + al.toFixed(3) + ')';
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        }
+      }
+      for(var m=0;m<out.length;m++){
+        var q = out[m];
+        var r = Math.max(0.6, 1.85*q.p);
+        var alpha = Math.min(0.85, Math.max(0.14, q.p - 0.55));
+        ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, 6.283185);
+        ctx.fillStyle = (q.p > 1.12) ? 'rgba(108,92,255,' + alpha.toFixed(3) + ')' : 'rgba(20,184,166,' + alpha.toFixed(3) + ')';
+        ctx.fill();
+      }
+    }
+    function tick(ts){
+      raf = requestAnimationFrame(tick);
+      if(!visible || document.hidden) return;
+      if(!last) last = ts;
+      var dt = Math.min(48, ts - last); last = ts;
+      rot += dt * 0.00016 + scrollRot*0.0004;
+      tmx += (mx - tmx) * 0.045;
+      tmy += (my - tmy) * 0.045;
+      paint();
+    }
+    if(REDUCED){ resize(); paint(); }
+    else { raf = requestAnimationFrame(tick); }
+
+    if('IntersectionObserver' in window && !REDUCED){
+      var io = new IntersectionObserver(function(en){ visible = en[0].isIntersecting; if(visible) last = 0; }, {threshold: 0});
+      io.observe(host);
+    }
+    fields.push({ host:host, canvas:canvas, mouse:function(nx,ny){ mx = nx; my = ny; }, scroll:function(v){ scrollRot = v; } });
+  }
+
+  function initHeroFields(){
+    mountField(document.querySelector('#authView .hero-art'));
+    mountField(document.querySelector('#mainApp .command-hero'));
+  }
+
+  /* mouse + scroll react (desktop only) */
+  if(FINE && !REDUCED){
+    window.addEventListener('pointermove', function(e){
+      var nx = (e.clientX / window.innerWidth) * 2 - 1;
+      var ny = (e.clientY / window.innerHeight) * 2 - 1;
+      for(var i=0;i<fields.length;i++) fields[i].mouse(nx, ny);
+    }, { passive:true });
+    window.addEventListener('scroll', function(){
+      for(var i=0;i<fields.length;i++) fields[i].scroll(window.scrollY || 0);
+    }, { passive:true });
+  }
+
+  /* ---------------- Magnetic buttons (desktop, motion-safe) ---------------- */
+  function initMagnetic(){
+    if(REDUCED || !FINE) return;
+    var targets = document.querySelectorAll('.primary-action, .vm-avatar-btn, .vm-pf-btn');
+    for(var i=0;i<targets.length;i++){
+      (function(el){
+        if(el.dataset.vmMag) return; el.dataset.vmMag = '1';
+        el.classList.add('vm-magnetic');
+        el.addEventListener('pointermove', function(e){
+          var r = el.getBoundingClientRect();
+          var dx = (e.clientX - (r.left + r.width/2)) / r.width;
+          var dy = (e.clientY - (r.top + r.height/2)) / r.height;
+          el.style.transform = 'translate3d(' + (dx*9).toFixed(2) + 'px,' + (dy*7).toFixed(2) + 'px,0)';
+        });
+        el.addEventListener('pointerleave', function(){ el.style.transform = ''; });
+      })(targets[i]);
+    }
+  }
+
+  /* ---------------- Clinical profile avatar menu ---------------- */
+  function initialsOf(name){
+    var s = String(name || '').trim();
+    if(!s) return 'VM';
+    var parts = s.split(/s+/);
+    var out = (parts[0] || '').charAt(0);
+    if(parts.length > 1) out += (parts[parts.length-1] || '').charAt(0);
+    return (out || 'VM').toUpperCase();
+  }
+  function readProfile(){
+    try{ return JSON.parse(localStorage.getItem(STORE) || '{}') || {}; }catch(e){ return {}; }
+  }
+  function writeProfile(data){
+    try{ localStorage.setItem(STORE, JSON.stringify(data)); }catch(e){}
+  }
+
+  function buildProfileMenu(){
+    var header = document.querySelector('#mainApp > header');
+    if(!header || header.querySelector('.vm-profile')) return;
+    var displayName = (document.getElementById('profileNameDisplay') && document.getElementById('profileNameDisplay').innerText || '').trim() || 'VoiceMed User';
+    var passed = (window.currentUser && window.currentUser.name) ? window.currentUser.name : '';
+    var saved = readProfile();
+    var fullName = saved.fullName || passed || displayName;
+    var email = (window.currentUser && window.currentUser.email) ? window.currentUser.email : (saved.email || '');
+
+    var wrap = document.createElement('div');
+    wrap.className = 'vm-profile';
+    wrap.innerHTML =
+      '<button class="vm-avatar-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="' + L('Open clinical profile','profile') + '" data-vm-avatar>' + initialsOf(fullName) + '</button>' +
+      '<div class="vm-profile-panel" role="dialog" aria-label="' + L('Clinical profile','profile') + '">' +
+        '<div class="vm-pf-head">' +
+          '<div class="vm-pf-avatar" data-vm-initials>' + initialsOf(fullName) + '</div>' +
+          '<div><div class="vm-pf-name" data-vm-name></div>' +
+          '<div class="vm-pf-mail" data-vm-mail></div>' +
+          '<span class="vm-pf-status"><i class="vm-pf-dot"></i><span data-vm-status></span></span></div>' +
+        '</div>' +
+        '<label class="vm-pf-label">' + L('Patient details','profile') + '</label>' +
+        '<input class="vm-pf-field" data-vm-field="fullName" placeholder="' + L('Full name','fullName') + '">' +
+        '<div class="vm-pf-row">' +
+          '<input class="vm-pf-field" data-vm-field="age" placeholder="' + L('Age / Date of birth','age') + '">' +
+          '<input class="vm-pf-field" data-vm-field="language" placeholder="' + L('Preferred language','language') + '">' +
+        '</div>' +
+        '<label class="vm-pf-label">' + L('Medical notes / allergies','notes') + '</label>' +
+        '<textarea class="vm-pf-field" data-vm-field="notes" placeholder="' + L('Allergies, ongoing conditions, current medications','notes') + '"></textarea>' +
+        '<div class="vm-pf-saved" data-vm-saved></div>' +
+        '<div class="vm-pf-actions">' +
+          '<button class="vm-pf-btn" type="button" data-vm-goto="history">' + L('Saved explanations','history') + '</button>' +
+          '<button class="vm-pf-btn" type="button" data-vm-goto="preferences">' + L('Preferences','preferences') + '</button>' +
+          '<button class="vm-pf-btn danger" type="button" data-vm-signout>' + L('Sign out / Lock workspace','exitWorkspace') + '</button>' +
+        '</div>' +
+      '</div>';
+    header.appendChild(wrap);
+
+    var btn = wrap.querySelector('[data-vm-avatar]');
+    var panel = wrap.querySelector('.vm-profile-panel');
+    var inputs = panel.querySelectorAll('[data-vm-field]');
+
+    function fill(){
+      var p = readProfile();
+      var name = p.fullName || fullName;
+      panel.querySelector('[data-vm-name]').textContent = name;
+      panel.querySelector('[data-vm-mail]').textContent = email || L('Local workspace','privateWorkspace');
+      for(var i=0;i<inputs.length;i++){
+        var k = inputs[i].dataset.vmField;
+        inputs[i].value = p[k] || (k === 'fullName' ? (p.fullName || fullName) : '');
+      }
+      panel.querySelector('[data-vm-initials]').textContent = initialsOf(name);
+      btn.textContent = initialsOf(name);
+    }
+    function syncOnline(){
+      var online = true;
+      try{ online = !!(document.querySelector('#mainApp .bg-green-500, #mainApp .text-emerald-400, #mainApp [data-connection="online"]')) || (window.navigator.onLine !== false); }catch(e){}
+      panel.setAttribute('data-online', online ? 'true' : 'false');
+      panel.querySelector('[data-vm-status]').textContent = online ? L('Online','online') : L('Offline mode','offlineMode');
+    }
+    fill(); syncOnline();
+
+    function open(){ wrap.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+    function close(){ wrap.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('click', function(e){ e.stopPropagation(); wrap.classList.contains('open') ? close() : (fill(), syncOnline(), open()); });
+    document.addEventListener('click', function(e){ if(!wrap.contains(e.target)) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+
+    var saveTimer = null;
+    for(var i=0;i<inputs.length;i++){
+      inputs[i].addEventListener('input', function(){
+        var data = readProfile();
+        for(var j=0;j<inputs.length;j++) data[inputs[j].dataset.vmField] = inputs[j].value;
+        writeProfile(data);
+        if(saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(function(){
+          panel.querySelector('[data-vm-saved]').textContent = L('Saved on this device','worksOffline');
+          var nm = panel.querySelector('[data-vm-name]'); nm.textContent = data.fullName || fullName;
+          panel.querySelector('[data-vm-initials]').textContent = initialsOf(data.fullName || fullName);
+          btn.textContent = initialsOf(data.fullName || fullName);
+        }, 320);
+      });
+    }
+
+    panel.querySelector('[data-vm-signout]').addEventListener('click', function(){
+      close();
+      try{ if(typeof logout === 'function'){ logout(); return; } }catch(e){}
+      var l = document.querySelector('#mainApp header button[onclick="logout()"]');
+      if(l) l.click();
+    });
+
+    var shortcuts = panel.querySelectorAll('[data-vm-goto]');
+    for(var s=0;s<shortcuts.length;s++){
+      shortcuts[s].addEventListener('click', function(){
+        var want = this.dataset.vmGoto;
+        var sel = want === 'history' ? '[data-i18n="savedExplanations"], #historyPanel, [data-nav="history"]' : '[data-i18n="preferences"], #preferencesPanel, [data-nav="preferences"]';
+        var target = document.querySelector(sel);
+        close();
+        if(target){ target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block:'center' }); if(target.focus) try{ target.focus({preventScroll:true}); }catch(e){} }
+      });
+    }
+    initMagnetic();
+  }
+
+  /* ---------------- Boot + re-bind after view changes ---------------- */
+  function refresh(){
+    initHeroFields();
+    buildProfileMenu();
+    initMagnetic();
+  }
+  function boot(){
+    refresh();
+    var mo = new MutationObserver(function(){ refresh(); });
+    var main = document.getElementById('mainApp');
+    if(main) mo.observe(main, { attributes:true, attributeFilter:['class'] });
+    document.addEventListener('visibilitychange', function(){ /* rAF loop self-pauses via document.hidden */ });
+    var tries = 0, iv = setInterval(function(){ tries++; refresh(); if((document.querySelector('.vm-profile') && document.querySelector('.vm-hero-canvas')) || tries > 20) clearInterval(iv); }, 500);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+
+<script>
+/* ===== vm-module-routing : per-module view chrome (sub-tabs, placeholder, upload label) ===== */
+(function(){
+  'use strict';
+  window.VM_META = {
+    prescription:  { ph:'Paste prescription text: e.g. Tab Telma 40mg OD x 30 days after food', up:'Upload prescription or report' },
+    bill_analysis: { ph:'Paste bill line items: e.g. Room Rent (Private) 15000; Surgeon Fees 30000; Consumables 9500', up:'Upload hospital bill (PDF or photo)' },
+    insurance:     { ph:'Paste the policy clause: e.g. Room rent capped at 1% of Sum Insured; consumables excluded', up:'Upload policy or claim document' },
+    pocket_doctor: { ph:'Describe symptoms: e.g. sudden chest tightness and left arm pain for 30 minutes', up:'Upload lab report or discharge note' }
+  };
+  
+  window.vmApplyModuleChrome = function(mod){
+    var ta=document.getElementById('mainInputText');
+    var meta=VM_META[mod];
+    if(ta){
+      ta.setAttribute('data-vm-module', mod);
+      if(meta && meta.ph) ta.placeholder = meta.ph;
+    }
+    var upload=document.querySelector('#uploadZone button');
+    if(upload && meta && meta.up) upload.innerText = meta.up;
+    var zone=document.getElementById('uploadZone');
+    if(zone) zone.setAttribute('data-vm-module', mod);
+  };
+  /* keep chrome in sync on first paint */
+  if(document.readyState!=='loading'){ try{ if(typeof currentModule!=='undefined') vmApplyModuleChrome(currentModule); }catch(e){} }
+  else document.addEventListener('DOMContentLoaded', function(){ try{ if(typeof currentModule!=='undefined') vmApplyModuleChrome(currentModule); }catch(e){} });
+})();
+</script>
+<script>
+/* ===== vm-luxe : glass, specular glare, 3D tilt, cursor-proximity shimmer ===== */
+(function(){
+  'use strict';
+  if(window.__vmLuxe) return; window.__vmLuxe = true;
+  var RM = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var FINE = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+
+  function decorate(){
+    var list = document.querySelectorAll('.glass-card, .metric-card, .tool-card');
+    for(var i=0;i<list.length;i++){
+      var el = list[i];
+      if(el.dataset.vmLuxe) continue;
+      el.dataset.vmLuxe = '1';
+      el.classList.add('vm-card','vm-glass');
+      if(getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      var sh = el.querySelector('.vm-shimmer');
+      if(!sh){ sh = document.createElement('span'); sh.className='vm-shimmer'; sh.setAttribute('aria-hidden','true'); el.appendChild(sh); }
+      var tilt = el.classList.contains('tool-card') || el.classList.contains('metric-card');
+      if(tilt) el.classList.add('vm-tilt');
+      (function(node, isTilt){
+        node.addEventListener('pointerenter', function(){ node.classList.add('vm-live'); });
+        node.addEventListener('pointerleave', function(){ node.classList.remove('vm-live'); if(isTilt) node.style.transform=''; });
+        if(FINE && !RM){
+          node.addEventListener('pointermove', function(e){
+            var r = node.getBoundingClientRect();
+            var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+            node.style.setProperty('--vmx', (px*100).toFixed(2)+'%');
+            node.style.setProperty('--vmy', (py*100).toFixed(2)+'%');
+            if(isTilt){
+              var rx = ((0.5 - py) * 6).toFixed(2), ry = ((px - 0.5) * 8).toFixed(2);
+              node.style.transform = 'perspective(900px) rotateX('+rx+'deg) rotateY('+ry+'deg) translateZ(0)';
+            }
+          });
+        }
+      })(el, tilt);
+    }
+  }
+  var pending = false;
+  function schedule(){ if(pending) return; pending = true; requestAnimationFrame(function(){ pending=false; decorate(); }); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', decorate); else decorate();
+  new MutationObserver(schedule).observe(document.documentElement, { childList:true, subtree:true });
+})();
+</script><script>
+/* ===== vm-auth : mouse spotlight, gradient ring, floating labels ===== */
+(function(){
+  'use strict';
+  if(window.__vmAuth) return; window.__vmAuth = true;
+  var RM = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var FINE = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+
+  function spotlight(){
+    var v = document.getElementById('authView');
+    if(!v || v.querySelector('.vm-spot')) return;
+    var s = document.createElement('div');
+    s.className = 'vm-spot'; s.setAttribute('aria-hidden','true');
+    v.insertBefore(s, v.firstChild);
+    if(FINE && !RM){
+      v.addEventListener('pointermove', function(e){
+        var r = v.getBoundingClientRect();
+        s.style.setProperty('--sx', (((e.clientX - r.left)/r.width)*100).toFixed(2)+'%');
+        s.style.setProperty('--sy', (((e.clientY - r.top)/r.height)*100).toFixed(2)+'%');
+        v.classList.add('vm-spot-on');
+      }, {passive:true});
+      v.addEventListener('pointerleave', function(){ v.classList.remove('vm-spot-on'); });
+    }
+  }
+  function rings(){
+    var list = document.querySelectorAll('.auth-card, .profile-card');
+    for(var i=0;i<list.length;i++){
+      var c = list[i];
+      if(c.querySelector('.vm-ring')) continue;
+      if(getComputedStyle(c).position === 'static') c.style.position = 'relative';
+      var r = document.createElement('span');
+      r.className = 'vm-ring'; r.setAttribute('aria-hidden','true');
+      c.appendChild(r);
+    }
+  }
+  function floats(){
+    var inputs = document.querySelectorAll('.auth-field, .profile-field');
+    for(var i=0;i<inputs.length;i++){
+      var inp = inputs[i];
+      if(inp.tagName !== 'INPUT' || inp.type === 'checkbox' || inp.type === 'radio' || inp.type === 'file' || inp.closest('.vm-float') || !inp.id) continue;
+      var lb = document.querySelector('label[for="'+inp.id+'"]');
+      if(!lb || lb.parentNode !== inp.parentNode) continue;
+      var w = document.createElement('div'); w.className = 'vm-float';
+      inp.parentNode.insertBefore(w, inp);
+      w.appendChild(inp); w.appendChild(lb);
+      if(!inp.getAttribute('placeholder')) inp.setAttribute('placeholder',' ');
+    }
+  }
+  function run(){ spotlight(); rings(); floats(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  var pend = false;
+  new MutationObserver(function(){ if(pend) return; pend = true; requestAnimationFrame(function(){ pend = false; run(); }); }).observe(document.documentElement, { childList:true, subtree:true });
+})();
+</script></body>
 </html>
